@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import { BUILD_TAG } from './src/version';
 
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/KoreaIssues/' : '/',
+  base: command === 'build' ? './' : '/',
   plugins: [react()],
   server: {
     port: 5174,
