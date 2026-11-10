@@ -1,0 +1,29 @@
+{
+  "name": "korea-issues",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "analyze:parsers": "node scripts/analyze-media-parsers.mjs",
+    "crawl:raw": "node scripts/crawl-raw-scripts.mjs",
+    "process:issues": "node scripts/process-issues-and-purge.mjs",
+    "purge:expired": "node scripts/process-issues-and-purge.mjs --purge-expired",
+    "purge:processed": "node scripts/process-issues-and-purge.mjs --purge-processed",
+    "pipeline": "node scripts/crawl-raw-scripts.mjs && node scripts/process-issues-and-purge.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.460.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "typescript": "~5.6.2",
+    "vite": "^5.4.10"
+  }
+}

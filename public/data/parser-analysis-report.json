@@ -1,0 +1,775 @@
+{
+  "analyzedAt": "2026-11-09T08:22:14.272Z",
+  "targetDate": "2026-11-08",
+  "summary": {
+    "newspapersAnalyzed": 10,
+    "newspapersWithWorkingRss": 6,
+    "broadcastersAnalyzed": 9,
+    "broadcastersWithYoutubeRss": 9,
+    "broadcastersWithDescriptionScript": 8,
+    "broadcastersWithCaptionTracks": 0
+  },
+  "newspapers": [
+    {
+      "channelId": "press-chosun",
+      "name": "조선일보",
+      "rank": 1,
+      "naverOid": "023",
+      "portalGroundTruth": {
+        "reachable": true,
+        "page1ArticleCount": 20,
+        "samplePublishedAt": "2026-11-08 23:56:11",
+        "sampleOriginalUrl": "https://www.chosun.com/opinion/chosun_column/2026/11/08/AILT3A4EWVDF5IKYKOFFT6J4BI/?utm_source&#x3D;naver&amp;utm_medium&#x3D;referral&amp;utm_campaign&#x3D;naver-news"
+      },
+      "officialRssDiagnostics": [
+        {
+          "section": "전체속보",
+          "url": "https://www.chosun.com/arc/outboundfeeds/rss/?outputType=xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 100,
+          "hasPubDate": true,
+          "avgDescriptionChars": 85,
+          "contentProvideLevel": "SUMMARY_ONLY"
+        },
+        {
+          "section": "정치",
+          "url": "https://www.chosun.com/arc/outboundfeeds/rss/category/politics/?outputType=xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 100,
+          "hasPubDate": true,
+          "avgDescriptionChars": 187,
+          "contentProvideLevel": "SUMMARY_ONLY"
+        },
+        {
+          "section": "경제",
+          "url": "https://www.chosun.com/arc/outboundfeeds/rss/category/economy/?outputType=xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 100,
+          "hasPubDate": true,
+          "avgDescriptionChars": 85,
+          "contentProvideLevel": "SUMMARY_ONLY"
+        },
+        {
+          "section": "사회",
+          "url": "https://www.chosun.com/arc/outboundfeeds/rss/category/national/?outputType=xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 100,
+          "hasPubDate": true,
+          "avgDescriptionChars": 61,
+          "contentProvideLevel": "SUMMARY_ONLY"
+        }
+      ],
+      "originalArticleDom": {
+        "hasOgPublishedTime": true,
+        "hasJsonLd": true,
+        "hasArticleTag": false,
+        "detectedSelectors": [
+          "meta[property=\"article:published_time\"]",
+          "script[type=\"application/ld+json\"]"
+        ],
+        "directParseDifficulty": "EASY"
+      },
+      "parsingStrategyRecommendation": "공식 RSS는 요약/링크만 제공하므로, RSS에서 URL 수집 후 원문 페이지의 JSON-LD / <article> 본문 파싱 결합 필요"
+    },
+    {
+      "channelId": "press-joongang",
+      "name": "중앙일보",
+      "rank": 2,
+      "naverOid": "025",
+      "portalGroundTruth": {
+        "reachable": true,
+        "page1ArticleCount": 21,
+        "samplePublishedAt": "2026-11-08 23:12:34",
+        "sampleOriginalUrl": "https://www.joongang.co.kr/article/25476758"
+      },
+      "officialRssDiagnostics": [
+        {
+          "section": "전체기사(Sitemap/RSS)",
+          "url": "https://www.joongang.co.kr/sitemap/latest-articles",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 277,
+          "hasPubDate": false,
+          "avgDescriptionChars": 0,
+          "contentProvideLevel": "SITEMAP_URLS_ONLY"
+        }
+      ],
+      "originalArticleDom": {
+        "hasOgPublishedTime": true,
+        "hasJsonLd": true,
+        "hasArticleTag": true,
+        "detectedSelectors": [
+          "meta[property=\"article:published_time\"]",
+          "script[type=\"application/ld+json\"]",
+          "<article>",
+          "#article-body",
+          ".article_body / .article_view"
+        ],
+        "directParseDifficulty": "EASY"
+      },
+      "parsingStrategyRecommendation": "공식 RSS는 요약/링크만 제공하므로, RSS에서 URL 수집 후 원문 페이지의 JSON-LD / <article> 본문 파싱 결합 필요"
+    },
+    {
+      "channelId": "press-donga",
+      "name": "동아일보",
+      "rank": 3,
+      "naverOid": "020",
+      "portalGroundTruth": {
+        "reachable": true,
+        "page1ArticleCount": 20,
+        "samplePublishedAt": "2026-11-08 23:48:20",
+        "sampleOriginalUrl": "https://www.donga.com/news/Inter/article/all/20261108/134988533/2"
+      },
+      "officialRssDiagnostics": [
+        {
+          "section": "전체기사",
+          "url": "https://rss.donga.com/total.xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 50,
+          "hasPubDate": true,
+          "avgDescriptionChars": 498,
+          "contentProvideLevel": "FULL_TEXT"
+        },
+        {
+          "section": "정치",
+          "url": "https://rss.donga.com/politics.xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 50,
+          "hasPubDate": true,
+          "avgDescriptionChars": 497,
+          "contentProvideLevel": "FULL_TEXT"
+        },
+        {
+          "section": "경제",
+          "url": "https://rss.donga.com/economy.xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 50,
+          "hasPubDate": true,
+          "avgDescriptionChars": 498,
+          "contentProvideLevel": "FULL_TEXT"
+        },
+        {
+          "section": "사회",
+          "url": "https://rss.donga.com/national.xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 50,
+          "hasPubDate": true,
+          "avgDescriptionChars": 498,
+          "contentProvideLevel": "FULL_TEXT"
+        }
+      ],
+      "originalArticleDom": {
+        "hasOgPublishedTime": true,
+        "hasJsonLd": true,
+        "hasArticleTag": true,
+        "detectedSelectors": [
+          "meta[property=\"article:published_time\"]",
+          "script[type=\"application/ld+json\"]",
+          "<article>"
+        ],
+        "directParseDifficulty": "EASY"
+      },
+      "parsingStrategyRecommendation": "공식 RSS에 본문 전문이 포함되어 있어 RSS 단독 수집 가능 (과거 날짜 백필 시에만 포털 정답지 병행)"
+    },
+    {
+      "channelId": "press-hani",
+      "name": "한겨레",
+      "rank": 4,
+      "naverOid": "028",
+      "portalGroundTruth": {
+        "reachable": true,
+        "page1ArticleCount": 21,
+        "samplePublishedAt": "2026-11-08 22:38:09",
+        "sampleOriginalUrl": "https://www.hani.co.kr/arti/economy/economy_general/1286356.html"
+      },
+      "officialRssDiagnostics": [
+        {
+          "section": "전체기사",
+          "url": "https://www.hani.co.kr/rss/",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 30,
+          "hasPubDate": false,
+          "avgDescriptionChars": 0,
+          "contentProvideLevel": "TITLE_AND_LINK_ONLY"
+        },
+        {
+          "section": "정치",
+          "url": "https://www.hani.co.kr/rss/politics/",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 30,
+          "hasPubDate": false,
+          "avgDescriptionChars": 0,
+          "contentProvideLevel": "TITLE_AND_LINK_ONLY"
+        },
+        {
+          "section": "경제",
+          "url": "https://www.hani.co.kr/rss/economy/",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 30,
+          "hasPubDate": false,
+          "avgDescriptionChars": 0,
+          "contentProvideLevel": "TITLE_AND_LINK_ONLY"
+        },
+        {
+          "section": "사회",
+          "url": "https://www.hani.co.kr/rss/society/",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 30,
+          "hasPubDate": false,
+          "avgDescriptionChars": 0,
+          "contentProvideLevel": "TITLE_AND_LINK_ONLY"
+        }
+      ],
+      "originalArticleDom": {
+        "hasOgPublishedTime": true,
+        "hasJsonLd": true,
+        "hasArticleTag": true,
+        "detectedSelectors": [
+          "meta[property=\"article:published_time\"]",
+          "script[type=\"application/ld+json\"]",
+          "<article>"
+        ],
+        "directParseDifficulty": "EASY"
+      },
+      "parsingStrategyRecommendation": "공식 RSS는 요약/링크만 제공하므로, RSS에서 URL 수집 후 원문 페이지의 JSON-LD / <article> 본문 파싱 결합 필요"
+    },
+    {
+      "channelId": "press-khan",
+      "name": "경향신문",
+      "rank": 5,
+      "naverOid": "032",
+      "portalGroundTruth": {
+        "reachable": true,
+        "page1ArticleCount": 22,
+        "samplePublishedAt": "2026-11-09 06:00:11",
+        "sampleOriginalUrl": "https://www.khan.co.kr/article/202611090600111"
+      },
+      "officialRssDiagnostics": [
+        {
+          "section": "전체기사",
+          "url": "https://www.khan.co.kr/rss/rssdata/total_news.xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 50,
+          "hasPubDate": true,
+          "avgDescriptionChars": 202,
+          "contentProvideLevel": "SUMMARY_ONLY"
+        },
+        {
+          "section": "정치",
+          "url": "https://www.khan.co.kr/rss/rssdata/politic_news.xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 50,
+          "hasPubDate": true,
+          "avgDescriptionChars": 203,
+          "contentProvideLevel": "SUMMARY_ONLY"
+        },
+        {
+          "section": "경제",
+          "url": "https://www.khan.co.kr/rss/rssdata/economy_news.xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 50,
+          "hasPubDate": true,
+          "avgDescriptionChars": 202,
+          "contentProvideLevel": "SUMMARY_ONLY"
+        },
+        {
+          "section": "사회",
+          "url": "https://www.khan.co.kr/rss/rssdata/society_news.xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 50,
+          "hasPubDate": true,
+          "avgDescriptionChars": 203,
+          "contentProvideLevel": "SUMMARY_ONLY"
+        }
+      ],
+      "originalArticleDom": {
+        "hasOgPublishedTime": true,
+        "hasJsonLd": true,
+        "hasArticleTag": true,
+        "detectedSelectors": [
+          "meta[property=\"article:published_time\"]",
+          "script[type=\"application/ld+json\"]",
+          "<article>",
+          "#article-body"
+        ],
+        "directParseDifficulty": "EASY"
+      },
+      "parsingStrategyRecommendation": "공식 RSS는 요약/링크만 제공하므로, RSS에서 URL 수집 후 원문 페이지의 JSON-LD / <article> 본문 파싱 결합 필요"
+    },
+    {
+      "channelId": "press-hankook",
+      "name": "한국일보",
+      "rank": 6,
+      "naverOid": "469",
+      "portalGroundTruth": {
+        "reachable": true,
+        "page1ArticleCount": 20,
+        "samplePublishedAt": "2026-11-08 22:14:15",
+        "sampleOriginalUrl": "https://www.hankookilbo.com/news/article/A2026110822000001329?did&#x3D;NA"
+      },
+      "officialRssDiagnostics": [
+        {
+          "section": "전체기사",
+          "url": "https://rss.hankookilbo.com/rss/hk_all.xml",
+          "reachable": false,
+          "httpStatus": 403,
+          "encoding": "utf-8",
+          "itemCount": 0,
+          "hasPubDate": false,
+          "avgDescriptionChars": 0,
+          "contentProvideLevel": "NONE"
+        }
+      ],
+      "originalArticleDom": {
+        "hasOgPublishedTime": true,
+        "hasJsonLd": true,
+        "hasArticleTag": false,
+        "detectedSelectors": [
+          "meta[property=\"article:published_time\"]",
+          "script[type=\"application/ld+json\"]",
+          ".article_body / .article_view"
+        ],
+        "directParseDifficulty": "EASY"
+      },
+      "parsingStrategyRecommendation": "공식 RSS 접근 불가 또는 Sitemap 전용 — 포털 정답지 수집 후 원문 링크(originallink) 메타데이터 매핑 권장"
+    },
+    {
+      "channelId": "press-seoul",
+      "name": "서울신문",
+      "rank": 7,
+      "naverOid": "081",
+      "portalGroundTruth": {
+        "reachable": true,
+        "page1ArticleCount": 20,
+        "samplePublishedAt": "2026-11-08 23:02:15",
+        "sampleOriginalUrl": "https://www.seoul.co.kr/news/international/2026/11/08/20261108500077?wlog_tag3&#x3D;naver"
+      },
+      "officialRssDiagnostics": [
+        {
+          "section": "전체기사",
+          "url": "https://www.seoul.co.kr/xml/rss/rss_all.xml",
+          "reachable": false,
+          "httpStatus": 404,
+          "encoding": "utf-8",
+          "itemCount": 0,
+          "hasPubDate": false,
+          "avgDescriptionChars": 0,
+          "contentProvideLevel": "NONE"
+        }
+      ],
+      "originalArticleDom": {
+        "hasOgPublishedTime": true,
+        "hasJsonLd": true,
+        "hasArticleTag": true,
+        "detectedSelectors": [
+          "meta[property=\"article:published_time\"]",
+          "script[type=\"application/ld+json\"]",
+          "<article>"
+        ],
+        "directParseDifficulty": "EASY"
+      },
+      "parsingStrategyRecommendation": "공식 RSS 접근 불가 또는 Sitemap 전용 — 포털 정답지 수집 후 원문 링크(originallink) 메타데이터 매핑 권장"
+    },
+    {
+      "channelId": "press-kmib",
+      "name": "국민일보",
+      "rank": 8,
+      "naverOid": "005",
+      "portalGroundTruth": {
+        "reachable": true,
+        "page1ArticleCount": 20,
+        "samplePublishedAt": "2026-11-08 23:59:08",
+        "sampleOriginalUrl": "https://www.kmib.co.kr/article/20261108501566"
+      },
+      "officialRssDiagnostics": [
+        {
+          "section": "전체기사",
+          "url": "https://rss.kmib.co.kr/data/kmibRssAll.xml",
+          "reachable": false,
+          "httpStatus": 0,
+          "encoding": "utf-8",
+          "itemCount": 0,
+          "hasPubDate": false,
+          "avgDescriptionChars": 0,
+          "contentProvideLevel": "NONE"
+        }
+      ],
+      "originalArticleDom": {
+        "hasOgPublishedTime": false,
+        "hasJsonLd": true,
+        "hasArticleTag": false,
+        "detectedSelectors": [
+          "script[type=\"application/ld+json\"]",
+          "#article-body",
+          ".article_body / .article_view"
+        ],
+        "directParseDifficulty": "EASY"
+      },
+      "parsingStrategyRecommendation": "공식 RSS 접근 불가 또는 Sitemap 전용 — 포털 정답지 수집 후 원문 링크(originallink) 메타데이터 매핑 권장"
+    },
+    {
+      "channelId": "press-segye",
+      "name": "세계일보",
+      "rank": 9,
+      "naverOid": "022",
+      "portalGroundTruth": {
+        "reachable": true,
+        "page1ArticleCount": 20,
+        "samplePublishedAt": "2026-11-08 23:17:08",
+        "sampleOriginalUrl": "https://www.segye.com/newsView/20261108511716?OutUrl&#x3D;naver"
+      },
+      "officialRssDiagnostics": [
+        {
+          "section": "전체기사",
+          "url": "https://www.segye.com/Articles/RSSList/segye_recent.xml",
+          "reachable": true,
+          "httpStatus": 200,
+          "encoding": "utf-8",
+          "itemCount": 20,
+          "hasPubDate": true,
+          "avgDescriptionChars": 173,
+          "contentProvideLevel": "SUMMARY_ONLY"
+        }
+      ],
+      "originalArticleDom": {
+        "hasOgPublishedTime": true,
+        "hasJsonLd": true,
+        "hasArticleTag": true,
+        "detectedSelectors": [
+          "meta[property=\"article:published_time\"]",
+          "script[type=\"application/ld+json\"]",
+          "<article>",
+          ".article_body / .article_view"
+        ],
+        "directParseDifficulty": "EASY"
+      },
+      "parsingStrategyRecommendation": "공식 RSS는 요약/링크만 제공하므로, RSS에서 URL 수집 후 원문 페이지의 JSON-LD / <article> 본문 파싱 결합 필요"
+    },
+    {
+      "channelId": "press-munhwa",
+      "name": "문화일보",
+      "rank": 10,
+      "naverOid": "021",
+      "portalGroundTruth": {
+        "reachable": true,
+        "page1ArticleCount": 20,
+        "samplePublishedAt": "2026-11-08 23:10:11",
+        "sampleOriginalUrl": "https://www.munhwa.com/article/11629691?ref&#x3D;naver"
+      },
+      "officialRssDiagnostics": [
+        {
+          "section": "전체기사",
+          "url": "https://www.munhwa.com/rss/rss_all.xml",
+          "reachable": false,
+          "httpStatus": 404,
+          "encoding": "utf-8",
+          "itemCount": 0,
+          "hasPubDate": false,
+          "avgDescriptionChars": 0,
+          "contentProvideLevel": "NONE"
+        }
+      ],
+      "originalArticleDom": {
+        "hasOgPublishedTime": true,
+        "hasJsonLd": true,
+        "hasArticleTag": true,
+        "detectedSelectors": [
+          "meta[property=\"article:published_time\"]",
+          "script[type=\"application/ld+json\"]",
+          "<article>",
+          "#article-body",
+          ".article_body / .article_view"
+        ],
+        "directParseDifficulty": "EASY"
+      },
+      "parsingStrategyRecommendation": "공식 RSS 접근 불가 또는 Sitemap 전용 — 포털 정답지 수집 후 원문 링크(originallink) 메타데이터 매핑 권장"
+    }
+  ],
+  "broadcasters": [
+    {
+      "channelId": "yt-kbs",
+      "name": "KBS News",
+      "broadcasterName": "KBS",
+      "verifiedYoutubeChannelId": "UCcQTRi69dsVYHN3exePtZ1A",
+      "youtubeHandle": "@kbsnews",
+      "youtubeRssReachable": true,
+      "rssVideoCount": 15,
+      "sampleVideoId": "VzqROP4-Nuc",
+      "sampleTitle": "[🔴이슈] 부를 땐 국가의 아들, 다치면 '느그 아들'/두통약 구하러 '삼만리'…아프면 답 없軍/2026년 11월 9일(월)/KBS",
+      "samplePublishedAt": "2026-11-09T05:34:44+00:00",
+      "descriptionScriptAnalysis": {
+        "avgDescriptionChars": 912,
+        "fullScriptInDescriptionRatio": "5/5",
+        "providesScriptInDescription": true
+      },
+      "youtubeCaptionTrackAnalysis": {
+        "watchPageReachable": true,
+        "hasCaptionTracks": false,
+        "tracks": []
+      },
+      "portalBroadcastTranscriptFallback": {
+        "naverOid": "056",
+        "reachable": true,
+        "page1TranscriptCount": 21
+      },
+      "recommendedTranscriptSource": "유튜브 영상 설명란(Description) 대본 전문 + 부족 시 자막 트랙/방송사 뉴스 포털 원고 결합"
+    },
+    {
+      "channelId": "yt-mbc",
+      "name": "MBCNEWS",
+      "broadcasterName": "MBC",
+      "verifiedYoutubeChannelId": "UCF4Wxdo3inmxP-Y59wXDsFw",
+      "youtubeHandle": "@MBCNEWS11",
+      "youtubeRssReachable": true,
+      "rssVideoCount": 15,
+      "sampleVideoId": "fHc1406B_Pk",
+      "sampleTitle": "이 대통령 \"정부가 소방의 119 될 것\"‥기념식·오찬 등 '소방의 날' 행사 현장 - [현장PLAY] MBC뉴스 2026년 11월 09일",
+      "samplePublishedAt": "2026-11-09T06:46:35+00:00",
+      "descriptionScriptAnalysis": {
+        "avgDescriptionChars": 399,
+        "fullScriptInDescriptionRatio": "4/5",
+        "providesScriptInDescription": true
+      },
+      "youtubeCaptionTrackAnalysis": {
+        "watchPageReachable": true,
+        "hasCaptionTracks": false,
+        "tracks": []
+      },
+      "portalBroadcastTranscriptFallback": {
+        "naverOid": "214",
+        "reachable": true,
+        "page1TranscriptCount": 20
+      },
+      "recommendedTranscriptSource": "유튜브 영상 설명란(Description) 대본 전문 + 부족 시 자막 트랙/방송사 뉴스 포털 원고 결합"
+    },
+    {
+      "channelId": "yt-sbs",
+      "name": "SBS 뉴스",
+      "broadcasterName": "SBS",
+      "verifiedYoutubeChannelId": "UCkinYTS9IHqOEwR1Sze2JTw",
+      "youtubeHandle": "@sbsnews8",
+      "youtubeRssReachable": true,
+      "rssVideoCount": 15,
+      "sampleVideoId": "XcMEcNeehbM",
+      "sampleTitle": "[🔴LIVE] \"메디슨 황 왜 불참?\" SBS 질문에 '입꾹닫'...'CEO 스캔들' 얼룩진 AI데이 현장 / SBS 실시간 LIVE",
+      "samplePublishedAt": "2026-11-09T07:00:07+00:00",
+      "descriptionScriptAnalysis": {
+        "avgDescriptionChars": 141,
+        "fullScriptInDescriptionRatio": "1/5",
+        "providesScriptInDescription": false
+      },
+      "youtubeCaptionTrackAnalysis": {
+        "watchPageReachable": true,
+        "hasCaptionTracks": false,
+        "tracks": []
+      },
+      "portalBroadcastTranscriptFallback": {
+        "naverOid": "055",
+        "reachable": true,
+        "page1TranscriptCount": 20
+      },
+      "recommendedTranscriptSource": "유튜브 메타데이터 + 방송사 뉴스 원고(포털/홈페이지) 결합"
+    },
+    {
+      "channelId": "yt-jtbc",
+      "name": "JTBC News",
+      "broadcasterName": "JTBC",
+      "verifiedYoutubeChannelId": "UCsU-I-vHLiaMfV_ceaYz5rQ",
+      "youtubeHandle": "@jtbc_news",
+      "youtubeRssReachable": true,
+      "rssVideoCount": 15,
+      "sampleVideoId": "sCVBVGtwr34",
+      "sampleTitle": "[LIVE/JTBC 뉴스] 이가혁 라이브 – 조작기소 특검법 여야 극렬 대치 / '신천지 공방' 같은 명부, 엇갈린 해석 (26.11.9)",
+      "samplePublishedAt": "2026-11-09T05:06:15+00:00",
+      "descriptionScriptAnalysis": {
+        "avgDescriptionChars": 685,
+        "fullScriptInDescriptionRatio": "5/5",
+        "providesScriptInDescription": true
+      },
+      "youtubeCaptionTrackAnalysis": {
+        "watchPageReachable": true,
+        "hasCaptionTracks": false,
+        "tracks": []
+      },
+      "portalBroadcastTranscriptFallback": {
+        "naverOid": "437",
+        "reachable": true,
+        "page1TranscriptCount": 20
+      },
+      "recommendedTranscriptSource": "유튜브 영상 설명란(Description) 대본 전문 + 부족 시 자막 트랙/방송사 뉴스 포털 원고 결합"
+    },
+    {
+      "channelId": "yt-tvchosun",
+      "name": "뉴스TVCHOSUN",
+      "broadcasterName": "TV조선",
+      "verifiedYoutubeChannelId": "UCWlV3Lz_55UaX4JsMj-z__Q",
+      "youtubeHandle": "@tvchosunnews",
+      "youtubeRssReachable": true,
+      "rssVideoCount": 15,
+      "sampleVideoId": "45lI63t2g3c",
+      "sampleTitle": "11월 9일 (월) 시사팩트 오늘 - 젠슨 황 \"가족에게 미안하다\" / 유동규 \"이용철과 포커 쳤다\" / 조작기소 특검에 380억 투입?",
+      "samplePublishedAt": "2026-11-09T05:13:55+00:00",
+      "descriptionScriptAnalysis": {
+        "avgDescriptionChars": 596,
+        "fullScriptInDescriptionRatio": "5/5",
+        "providesScriptInDescription": true
+      },
+      "youtubeCaptionTrackAnalysis": {
+        "watchPageReachable": true,
+        "hasCaptionTracks": false,
+        "tracks": []
+      },
+      "portalBroadcastTranscriptFallback": {
+        "naverOid": "448",
+        "reachable": true,
+        "page1TranscriptCount": 21
+      },
+      "recommendedTranscriptSource": "유튜브 영상 설명란(Description) 대본 전문 + 부족 시 자막 트랙/방송사 뉴스 포털 원고 결합"
+    },
+    {
+      "channelId": "yt-channela",
+      "name": "채널A News",
+      "broadcasterName": "채널A",
+      "verifiedYoutubeChannelId": "UCfq4V1DAuaojnr2ryvWNysw",
+      "youtubeHandle": "@channelA-news",
+      "youtubeRssReachable": true,
+      "rssVideoCount": 15,
+      "sampleVideoId": "NtoY7wETRXI",
+      "sampleTitle": "[LIVE] 국민의힘, 청와대 앞 여론전 · 젠슨 황, 결국 불륜 인정 / 채널A / 뉴스TOP10",
+      "samplePublishedAt": "2026-11-09T04:11:41+00:00",
+      "descriptionScriptAnalysis": {
+        "avgDescriptionChars": 629,
+        "fullScriptInDescriptionRatio": "5/5",
+        "providesScriptInDescription": true
+      },
+      "youtubeCaptionTrackAnalysis": {
+        "watchPageReachable": true,
+        "hasCaptionTracks": false,
+        "tracks": []
+      },
+      "portalBroadcastTranscriptFallback": {
+        "naverOid": "449",
+        "reachable": true,
+        "page1TranscriptCount": 20
+      },
+      "recommendedTranscriptSource": "유튜브 영상 설명란(Description) 대본 전문 + 부족 시 자막 트랙/방송사 뉴스 포털 원고 결합"
+    },
+    {
+      "channelId": "yt-mbn",
+      "name": "MBN News",
+      "broadcasterName": "MBN",
+      "verifiedYoutubeChannelId": "UCG9aFJTZ-lMCHAiO1KJsirg",
+      "youtubeHandle": "@MBN_News",
+      "youtubeRssReachable": true,
+      "rssVideoCount": 15,
+      "sampleVideoId": "0HGhVTY79A0",
+      "sampleTitle": "[이슈] 영하권 아침 이틀 더…\"출근길 목도리·장갑 챙기세요\" / 오늘도 초겨울 추위…내일 최저 영하 3도 | MBN NEWS",
+      "samplePublishedAt": "2026-11-09T08:00:02+00:00",
+      "descriptionScriptAnalysis": {
+        "avgDescriptionChars": 471,
+        "fullScriptInDescriptionRatio": "5/5",
+        "providesScriptInDescription": true
+      },
+      "youtubeCaptionTrackAnalysis": {
+        "watchPageReachable": true,
+        "hasCaptionTracks": false,
+        "tracks": []
+      },
+      "portalBroadcastTranscriptFallback": {
+        "naverOid": "057",
+        "reachable": true,
+        "page1TranscriptCount": 20
+      },
+      "recommendedTranscriptSource": "유튜브 영상 설명란(Description) 대본 전문 + 부족 시 자막 트랙/방송사 뉴스 포털 원고 결합"
+    },
+    {
+      "channelId": "yt-ytn",
+      "name": "YTN",
+      "broadcasterName": "YTN",
+      "verifiedYoutubeChannelId": "UChlgI3UHCOnwUGzWzbJ3H5w",
+      "youtubeHandle": "@ytnnews24",
+      "youtubeRssReachable": true,
+      "rssVideoCount": 15,
+      "sampleVideoId": "ash7Nwb5j9U",
+      "sampleTitle": "트럼프 참패 '희생양' 되나…궁지 몰린 헤그세스 \"정면 돌파\" [에디터픽] / YTN",
+      "samplePublishedAt": "2026-11-09T07:38:03+00:00",
+      "descriptionScriptAnalysis": {
+        "avgDescriptionChars": 1041,
+        "fullScriptInDescriptionRatio": "5/5",
+        "providesScriptInDescription": true
+      },
+      "youtubeCaptionTrackAnalysis": {
+        "watchPageReachable": true,
+        "hasCaptionTracks": false,
+        "tracks": []
+      },
+      "portalBroadcastTranscriptFallback": {
+        "naverOid": "052",
+        "reachable": true,
+        "page1TranscriptCount": 21
+      },
+      "recommendedTranscriptSource": "유튜브 영상 설명란(Description) 대본 전문 + 부족 시 자막 트랙/방송사 뉴스 포털 원고 결합"
+    },
+    {
+      "channelId": "yt-yonhaptv",
+      "name": "연합뉴스TV",
+      "broadcasterName": "연합뉴스TV",
+      "verifiedYoutubeChannelId": "UCTHCOPwqNfZ0uiKOvFyhGwg",
+      "youtubeHandle": "@yonhapnewstv23",
+      "youtubeRssReachable": true,
+      "rssVideoCount": 15,
+      "sampleVideoId": "RqOyKlesEHw",
+      "sampleTitle": "[🔴속보] 공포에 휩싸인 유럽…폴란드 도심서 극우 남성 총기 난사 '참극'｜잇단 테러에 시위까지…프랑스 4주째 대규모 시위/ 연합뉴스TV(YonhapnewsTV)",
+      "samplePublishedAt": "2026-11-09T07:59:40+00:00",
+      "descriptionScriptAnalysis": {
+        "avgDescriptionChars": 728,
+        "fullScriptInDescriptionRatio": "5/5",
+        "providesScriptInDescription": true
+      },
+      "youtubeCaptionTrackAnalysis": {
+        "watchPageReachable": true,
+        "hasCaptionTracks": false,
+        "tracks": []
+      },
+      "portalBroadcastTranscriptFallback": {
+        "naverOid": "422",
+        "reachable": true,
+        "page1TranscriptCount": 21
+      },
+      "recommendedTranscriptSource": "유튜브 영상 설명란(Description) 대본 전문 + 부족 시 자막 트랙/방송사 뉴스 포털 원고 결합"
+    }
+  ]
+}

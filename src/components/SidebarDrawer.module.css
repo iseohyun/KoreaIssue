@@ -1,0 +1,209 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(2px);
+  z-index: 90;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: #ffffff;
+  border-right: 1px solid #cbd5e1;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16);
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+}
+
+.topBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.drawerHeader {
+  padding: 12px 16px;
+  border-bottom: 1px solid #bae6fd;
+  background: linear-gradient(90deg, #e0f2fe 0%, #dbeafe 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawerTitle {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.closeBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  border: 1px solid #93c5fd;
+  background: rgba(255, 255, 255, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #1e3a8a;
+}
+
+.closeBtn:hover {
+  background: #ffffff;
+  border-color: #2563eb;
+}
+
+.navList {
+  padding: 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.navItem {
+  position: relative;
+  width: 100%;
+  padding: 10px 13px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: #0f172a;
+  font-size: 0.88rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.navItem:hover {
+  background-color: #f1f5f9;
+  color: #1d4ed8;
+}
+
+.navItemActive {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.navGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.navGroupHeader {
+  justify-content: space-between;
+}
+
+.navGroupHeaderActive {
+  color: #1e40af;
+  background-color: #eff6ff;
+}
+
+.navGroupLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.subNavAnimWrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s ease;
+}
+
+.subNavAnimWrapperOpen {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.subNavAnimInner {
+  overflow: hidden;
+}
+
+.subNavList {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 2px 0 4px 16px;
+}
+
+.subNavItem {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.subNavItem:hover {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.subNavItemActive {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+  font-weight: 700;
+}
+
+.rankBadge {
+  min-width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rankBadgeTop3 {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.subNavTitleText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.bottomBlock {
+  padding: 12px 12px 16px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}

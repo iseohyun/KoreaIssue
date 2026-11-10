@@ -1,0 +1,379 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-11-09T13:11:27.478Z",
+  "description": "채널별 어제(D-1)부터 과거 날짜 역방향 순차 수집 범위(completedRanges) 및 비정상 종료 복구 커서(inProgress) DB",
+  "retentionDays": 30,
+  "channels": {
+    "press-chosun": {
+      "channelId": "press-chosun",
+      "name": "조선일보",
+      "mediaType": "NEWSPAPER",
+      "category": "종합일간지",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 45,
+      "rawBytesOnDisk": 231615,
+      "lastCrawledAt": "2026-11-09T10:37:25.844Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 22
+    },
+    "press-joongang": {
+      "channelId": "press-joongang",
+      "name": "중앙일보",
+      "mediaType": "NEWSPAPER",
+      "category": "종합일간지",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 42,
+      "rawBytesOnDisk": 187850,
+      "lastCrawledAt": "2026-11-09T10:37:30.732Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 21
+    },
+    "press-donga": {
+      "channelId": "press-donga",
+      "name": "동아일보",
+      "mediaType": "NEWSPAPER",
+      "category": "종합일간지",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 47,
+      "rawBytesOnDisk": 199602,
+      "lastCrawledAt": "2026-11-09T10:37:34.547Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 24
+    },
+    "press-hani": {
+      "channelId": "press-hani",
+      "name": "한겨레",
+      "mediaType": "NEWSPAPER",
+      "category": "종합일간지",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 44,
+      "rawBytesOnDisk": 230386,
+      "lastCrawledAt": "2026-11-09T10:37:39.038Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 20
+    },
+    "press-khan": {
+      "channelId": "press-khan",
+      "name": "경향신문",
+      "mediaType": "NEWSPAPER",
+      "category": "종합일간지",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 47,
+      "rawBytesOnDisk": 267697,
+      "lastCrawledAt": "2026-11-09T10:37:42.591Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 23
+    },
+    "press-hankook": {
+      "channelId": "press-hankook",
+      "name": "한국일보",
+      "mediaType": "NEWSPAPER",
+      "category": "종합일간지",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 38,
+      "rawBytesOnDisk": 176573,
+      "lastCrawledAt": "2026-11-09T10:37:48.375Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 18
+    },
+    "press-seoul": {
+      "channelId": "press-seoul",
+      "name": "서울신문",
+      "mediaType": "NEWSPAPER",
+      "category": "종합일간지",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 48,
+      "rawBytesOnDisk": 227970,
+      "lastCrawledAt": "2026-11-09T10:37:51.733Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 24
+    },
+    "press-kmib": {
+      "channelId": "press-kmib",
+      "name": "국민일보",
+      "mediaType": "NEWSPAPER",
+      "category": "종합일간지",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 44,
+      "rawBytesOnDisk": 170242,
+      "lastCrawledAt": "2026-11-09T10:37:55.186Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 23
+    },
+    "press-segye": {
+      "channelId": "press-segye",
+      "name": "세계일보",
+      "mediaType": "NEWSPAPER",
+      "category": "종합일간지",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 41,
+      "rawBytesOnDisk": 172813,
+      "lastCrawledAt": "2026-11-09T10:37:59.533Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 21
+    },
+    "press-munhwa": {
+      "channelId": "press-munhwa",
+      "name": "문화일보",
+      "mediaType": "NEWSPAPER",
+      "category": "종합일간지",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 42,
+      "rawBytesOnDisk": 159728,
+      "lastCrawledAt": "2026-11-09T10:38:04.108Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 20
+    },
+    "yt-kbs": {
+      "channelId": "yt-kbs",
+      "name": "KBS News",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "category": "지상파",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 63,
+      "rawBytesOnDisk": 177502,
+      "lastCrawledAt": "2026-11-09T10:38:05.685Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 38
+    },
+    "yt-mbc": {
+      "channelId": "yt-mbc",
+      "name": "MBCNEWS",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "category": "지상파",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 34,
+      "rawBytesOnDisk": 93258,
+      "lastCrawledAt": "2026-11-09T10:38:06.919Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 19
+    },
+    "yt-sbs": {
+      "channelId": "yt-sbs",
+      "name": "SBS 뉴스",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "category": "지상파",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 28,
+      "rawBytesOnDisk": 74290,
+      "lastCrawledAt": "2026-11-09T10:38:08.698Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 14
+    },
+    "yt-jtbc": {
+      "channelId": "yt-jtbc",
+      "name": "JTBC News",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "category": "종편",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 49,
+      "rawBytesOnDisk": 131715,
+      "lastCrawledAt": "2026-11-09T10:38:11.740Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 26
+    },
+    "yt-tvchosun": {
+      "channelId": "yt-tvchosun",
+      "name": "뉴스TVCHOSUN",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "category": "종편",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 55,
+      "rawBytesOnDisk": 120538,
+      "lastCrawledAt": "2026-11-09T10:38:13.725Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 32
+    },
+    "yt-channela": {
+      "channelId": "yt-channela",
+      "name": "채널A News",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "category": "종편",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 52,
+      "rawBytesOnDisk": 121222,
+      "lastCrawledAt": "2026-11-09T10:38:15.936Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 30
+    },
+    "yt-mbn": {
+      "channelId": "yt-mbn",
+      "name": "MBN News",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "category": "종편",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 41,
+      "rawBytesOnDisk": 122101,
+      "lastCrawledAt": "2026-11-09T10:38:18.280Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 24
+    },
+    "yt-ytn": {
+      "channelId": "yt-ytn",
+      "name": "YTN",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "category": "보도전문",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 62,
+      "rawBytesOnDisk": 197831,
+      "lastCrawledAt": "2026-11-09T10:38:19.849Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 37
+    },
+    "yt-yonhaptv": {
+      "channelId": "yt-yonhaptv",
+      "name": "연합뉴스TV",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "category": "보도전문",
+      "completedRanges": [
+        {
+          "from": "2026-11-08",
+          "to": "2026-11-09"
+        }
+      ],
+      "inProgress": null,
+      "totalCollectedCount": 58,
+      "rawBytesOnDisk": 161328,
+      "lastCrawledAt": "2026-11-09T10:38:21.142Z",
+      "lastProcessedAt": "2026-11-09T13:11:27.478Z",
+      "lastCompletedDate": "2026-11-08",
+      "lastDateItemCount": 35
+    }
+  },
+  "storageSummary": {
+    "totalChannels": 19,
+    "totalArticlesAndVideos": 880,
+    "rawFilesCount": 38,
+    "rawDiskBytes": 3224261,
+    "rawDiskKB": 3148.69,
+    "rawDiskMB": 3.075,
+    "oldestRawDate": "2026-11-08",
+    "newestRawDate": "2026-11-09"
+  }
+}

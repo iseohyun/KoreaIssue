@@ -1,0 +1,292 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-11-09T17:18:00+09:00",
+  "description": "대한민국 전국 종합일간지 Top 10 및 주요 방송사(공식 유튜브 채널 1:1 매핑) 마스터 레지스트리",
+  "retentionPolicy": {
+    "rawScriptRetentionDays": 30,
+    "autoPurgeAfterDays": 30,
+    "allowImmediatePurgeAfterVerify": true
+  },
+  "newspapers": [
+    {
+      "id": "press-chosun",
+      "rank": 1,
+      "name": "조선일보",
+      "category": "종합일간지",
+      "mediaType": "NEWSPAPER",
+      "homepageUrl": "https://www.chosun.com",
+      "naverOid": "023",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=023&date={YYYYMMDD}&page={PAGE}",
+      "officialRssUrls": [
+        { "section": "전체속보", "url": "https://www.chosun.com/arc/outboundfeeds/rss/?outputType=xml" },
+        { "section": "정치", "url": "https://www.chosun.com/arc/outboundfeeds/rss/category/politics/?outputType=xml" },
+        { "section": "경제", "url": "https://www.chosun.com/arc/outboundfeeds/rss/category/economy/?outputType=xml" },
+        { "section": "사회", "url": "https://www.chosun.com/arc/outboundfeeds/rss/category/national/?outputType=xml" }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "press-joongang",
+      "rank": 2,
+      "name": "중앙일보",
+      "category": "종합일간지",
+      "mediaType": "NEWSPAPER",
+      "homepageUrl": "https://www.joongang.co.kr",
+      "naverOid": "025",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=025&date={YYYYMMDD}&page={PAGE}",
+      "officialRssUrls": [
+        { "section": "전체기사(Sitemap/RSS)", "url": "https://www.joongang.co.kr/sitemap/latest-articles" }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "press-donga",
+      "rank": 3,
+      "name": "동아일보",
+      "category": "종합일간지",
+      "mediaType": "NEWSPAPER",
+      "homepageUrl": "https://www.donga.com",
+      "naverOid": "020",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=020&date={YYYYMMDD}&page={PAGE}",
+      "officialRssUrls": [
+        { "section": "전체기사", "url": "https://rss.donga.com/total.xml" },
+        { "section": "정치", "url": "https://rss.donga.com/politics.xml" },
+        { "section": "경제", "url": "https://rss.donga.com/economy.xml" },
+        { "section": "사회", "url": "https://rss.donga.com/national.xml" }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "press-hani",
+      "rank": 4,
+      "name": "한겨레",
+      "category": "종합일간지",
+      "mediaType": "NEWSPAPER",
+      "homepageUrl": "https://www.hani.co.kr",
+      "naverOid": "028",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=028&date={YYYYMMDD}&page={PAGE}",
+      "officialRssUrls": [
+        { "section": "전체기사", "url": "https://www.hani.co.kr/rss/" },
+        { "section": "정치", "url": "https://www.hani.co.kr/rss/politics/" },
+        { "section": "경제", "url": "https://www.hani.co.kr/rss/economy/" },
+        { "section": "사회", "url": "https://www.hani.co.kr/rss/society/" }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "press-khan",
+      "rank": 5,
+      "name": "경향신문",
+      "category": "종합일간지",
+      "mediaType": "NEWSPAPER",
+      "homepageUrl": "https://www.khan.co.kr",
+      "naverOid": "032",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=032&date={YYYYMMDD}&page={PAGE}",
+      "officialRssUrls": [
+        { "section": "전체기사", "url": "https://www.khan.co.kr/rss/rssdata/total_news.xml" },
+        { "section": "정치", "url": "https://www.khan.co.kr/rss/rssdata/politic_news.xml" },
+        { "section": "경제", "url": "https://www.khan.co.kr/rss/rssdata/economy_news.xml" },
+        { "section": "사회", "url": "https://www.khan.co.kr/rss/rssdata/society_news.xml" }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "press-hankook",
+      "rank": 6,
+      "name": "한국일보",
+      "category": "종합일간지",
+      "mediaType": "NEWSPAPER",
+      "homepageUrl": "https://www.hankookilbo.com",
+      "naverOid": "469",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=469&date={YYYYMMDD}&page={PAGE}",
+      "officialRssUrls": [
+        { "section": "전체기사", "url": "https://rss.hankookilbo.com/rss/hk_all.xml" }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "press-seoul",
+      "rank": 7,
+      "name": "서울신문",
+      "category": "종합일간지",
+      "mediaType": "NEWSPAPER",
+      "homepageUrl": "https://www.seoul.co.kr",
+      "naverOid": "081",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=081&date={YYYYMMDD}&page={PAGE}",
+      "officialRssUrls": [
+        { "section": "전체기사", "url": "https://www.seoul.co.kr/xml/rss/rss_all.xml" }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "press-kmib",
+      "rank": 8,
+      "name": "국민일보",
+      "category": "종합일간지",
+      "mediaType": "NEWSPAPER",
+      "homepageUrl": "https://www.kmib.co.kr",
+      "naverOid": "005",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=005&date={YYYYMMDD}&page={PAGE}",
+      "officialRssUrls": [
+        { "section": "전체기사", "url": "https://rss.kmib.co.kr/data/kmibRssAll.xml" }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "press-segye",
+      "rank": 9,
+      "name": "세계일보",
+      "category": "종합일간지",
+      "mediaType": "NEWSPAPER",
+      "homepageUrl": "https://www.segye.com",
+      "naverOid": "022",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=022&date={YYYYMMDD}&page={PAGE}",
+      "officialRssUrls": [
+        { "section": "전체기사", "url": "https://www.segye.com/Articles/RSSList/segye_recent.xml" }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "press-munhwa",
+      "rank": 10,
+      "name": "문화일보",
+      "category": "종합일간지",
+      "mediaType": "NEWSPAPER",
+      "homepageUrl": "https://www.munhwa.com",
+      "naverOid": "021",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=021&date={YYYYMMDD}&page={PAGE}",
+      "officialRssUrls": [
+        { "section": "전체기사", "url": "https://www.munhwa.com/rss/rss_all.xml" }
+      ],
+      "enabled": true
+    }
+  ],
+  "broadcasters": [
+    {
+      "id": "yt-kbs",
+      "name": "KBS News",
+      "broadcasterName": "KBS",
+      "category": "지상파",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "youtubeChannelId": "UCcQTRi69dsVYHN3exePtZ1A",
+      "youtubeHandle": "@kbsnews",
+      "youtubeChannelUrl": "https://www.youtube.com/@kbsnews",
+      "youtubeRssUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCcQTRi69dsVYHN3exePtZ1A",
+      "naverOid": "056",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=056&date={YYYYMMDD}&page={PAGE}",
+      "enabled": true
+    },
+    {
+      "id": "yt-mbc",
+      "name": "MBCNEWS",
+      "broadcasterName": "MBC",
+      "category": "지상파",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "youtubeChannelId": "UCF4Wxdo3inmxP-Y59wXDsFw",
+      "youtubeHandle": "@MBCNEWS11",
+      "youtubeChannelUrl": "https://www.youtube.com/@MBCNEWS11",
+      "youtubeRssUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCF4Wxdo3inmxP-Y59wXDsFw",
+      "naverOid": "214",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=214&date={YYYYMMDD}&page={PAGE}",
+      "enabled": true
+    },
+    {
+      "id": "yt-sbs",
+      "name": "SBS 뉴스",
+      "broadcasterName": "SBS",
+      "category": "지상파",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "youtubeChannelId": "UCkinYTS9IHqOEwR1Sze2JTw",
+      "youtubeHandle": "@sbsnews8",
+      "youtubeChannelUrl": "https://www.youtube.com/@sbsnews8",
+      "youtubeRssUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCkinYTS9IHqOEwR1Sze2JTw",
+      "naverOid": "055",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=055&date={YYYYMMDD}&page={PAGE}",
+      "enabled": true
+    },
+    {
+      "id": "yt-jtbc",
+      "name": "JTBC News",
+      "broadcasterName": "JTBC",
+      "category": "종편",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "youtubeChannelId": "UCsU-I-vHLiaMfV_ceaYz5rQ",
+      "youtubeHandle": "@jtbc_news",
+      "youtubeChannelUrl": "https://www.youtube.com/@jtbc_news",
+      "youtubeRssUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCsU-I-vHLiaMfV_ceaYz5rQ",
+      "naverOid": "437",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=437&date={YYYYMMDD}&page={PAGE}",
+      "enabled": true
+    },
+    {
+      "id": "yt-tvchosun",
+      "name": "뉴스TVCHOSUN",
+      "broadcasterName": "TV조선",
+      "category": "종편",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "youtubeChannelId": "UCWlV3Lz_55UaX4JsMj-z__Q",
+      "youtubeHandle": "@tvchosunnews",
+      "youtubeChannelUrl": "https://www.youtube.com/@tvchosunnews",
+      "youtubeRssUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCWlV3Lz_55UaX4JsMj-z__Q",
+      "naverOid": "448",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=448&date={YYYYMMDD}&page={PAGE}",
+      "enabled": true
+    },
+    {
+      "id": "yt-channela",
+      "name": "채널A News",
+      "broadcasterName": "채널A",
+      "category": "종편",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "youtubeChannelId": "UCfq4V1DAuaojnr2ryvWNysw",
+      "youtubeHandle": "@channelA-news",
+      "youtubeChannelUrl": "https://www.youtube.com/@channelA-news",
+      "youtubeRssUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCfq4V1DAuaojnr2ryvWNysw",
+      "naverOid": "449",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=449&date={YYYYMMDD}&page={PAGE}",
+      "enabled": true
+    },
+    {
+      "id": "yt-mbn",
+      "name": "MBN News",
+      "broadcasterName": "MBN",
+      "category": "종편",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "youtubeChannelId": "UCG9aFJTZ-lMCHAiO1KJsirg",
+      "youtubeHandle": "@MBN_News",
+      "youtubeChannelUrl": "https://www.youtube.com/@MBN_News",
+      "youtubeRssUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCG9aFJTZ-lMCHAiO1KJsirg",
+      "naverOid": "057",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=057&date={YYYYMMDD}&page={PAGE}",
+      "enabled": true
+    },
+    {
+      "id": "yt-ytn",
+      "name": "YTN",
+      "broadcasterName": "YTN",
+      "category": "보도전문",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "youtubeChannelId": "UChlgI3UHCOnwUGzWzbJ3H5w",
+      "youtubeHandle": "@ytnnews24",
+      "youtubeChannelUrl": "https://www.youtube.com/@ytnnews24",
+      "youtubeRssUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UChlgI3UHCOnwUGzWzbJ3H5w",
+      "naverOid": "052",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=052&date={YYYYMMDD}&page={PAGE}",
+      "enabled": true
+    },
+    {
+      "id": "yt-yonhaptv",
+      "name": "연합뉴스TV",
+      "broadcasterName": "연합뉴스TV",
+      "category": "보도전문",
+      "mediaType": "BROADCAST_YOUTUBE",
+      "youtubeChannelId": "UCTHCOPwqNfZ0uiKOvFyhGwg",
+      "youtubeHandle": "@yonhapnewstv23",
+      "youtubeChannelUrl": "https://www.youtube.com/@yonhapnewstv23",
+      "youtubeRssUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCTHCOPwqNfZ0uiKOvFyhGwg",
+      "naverOid": "422",
+      "portalListUrlTemplate": "https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=422&date={YYYYMMDD}&page={PAGE}",
+      "enabled": true
+    }
+  ]
+}
