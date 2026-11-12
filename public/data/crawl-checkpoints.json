@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updatedAt": "2026-11-11T18:41:25.280Z",
+  "updatedAt": "2026-11-12T02:10:42.949Z",
   "description": "채널별 어제(D-1)부터 과거 날짜 역방향 순차 수집 범위(completedRanges) 및 비정상 종료 복구 커서(inProgress) DB",
   "retentionDays": 30,
   "channels": {
@@ -23,7 +23,7 @@
       "totalCollectedCount": 79,
       "rawBytesOnDisk": 415465,
       "lastCrawledAt": "2026-11-11T01:50:07.574Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.948Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 11
     },
@@ -46,7 +46,7 @@
       "totalCollectedCount": 77,
       "rawBytesOnDisk": 344772,
       "lastCrawledAt": "2026-11-11T01:50:12.487Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 11
     },
@@ -69,7 +69,7 @@
       "totalCollectedCount": 83,
       "rawBytesOnDisk": 393218,
       "lastCrawledAt": "2026-11-11T01:50:17.190Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 12
     },
@@ -92,7 +92,7 @@
       "totalCollectedCount": 78,
       "rawBytesOnDisk": 387955,
       "lastCrawledAt": "2026-11-11T01:50:22.287Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 11
     },
@@ -115,7 +115,7 @@
       "totalCollectedCount": 83,
       "rawBytesOnDisk": 438638,
       "lastCrawledAt": "2026-11-11T01:50:26.622Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 12
     },
@@ -138,7 +138,7 @@
       "totalCollectedCount": 67,
       "rawBytesOnDisk": 314032,
       "lastCrawledAt": "2026-11-11T01:50:31.616Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 11
     },
@@ -161,7 +161,7 @@
       "totalCollectedCount": 82,
       "rawBytesOnDisk": 386735,
       "lastCrawledAt": "2026-11-11T01:50:36.625Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 10
     },
@@ -184,7 +184,7 @@
       "totalCollectedCount": 79,
       "rawBytesOnDisk": 328816,
       "lastCrawledAt": "2026-11-11T01:50:41.523Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 11
     },
@@ -207,7 +207,7 @@
       "totalCollectedCount": 77,
       "rawBytesOnDisk": 340695,
       "lastCrawledAt": "2026-11-11T01:50:45.958Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 12
     },
@@ -230,7 +230,7 @@
       "totalCollectedCount": 75,
       "rawBytesOnDisk": 282541,
       "lastCrawledAt": "2026-11-11T01:50:50.425Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 11
     },
@@ -253,7 +253,7 @@
       "totalCollectedCount": 108,
       "rawBytesOnDisk": 303189,
       "lastCrawledAt": "2026-11-11T01:50:54.393Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 10
     },
@@ -276,7 +276,7 @@
       "totalCollectedCount": 65,
       "rawBytesOnDisk": 215957,
       "lastCrawledAt": "2026-11-11T01:50:59.880Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 6
     },
@@ -299,7 +299,7 @@
       "totalCollectedCount": 62,
       "rawBytesOnDisk": 186238,
       "lastCrawledAt": "2026-11-11T01:51:04.770Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 8
     },
@@ -322,7 +322,7 @@
       "totalCollectedCount": 84,
       "rawBytesOnDisk": 230772,
       "lastCrawledAt": "2026-11-11T01:51:10.395Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 4
     },
@@ -345,7 +345,7 @@
       "totalCollectedCount": 97,
       "rawBytesOnDisk": 223354,
       "lastCrawledAt": "2026-11-11T01:51:14.370Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 9
     },
@@ -368,7 +368,7 @@
       "totalCollectedCount": 95,
       "rawBytesOnDisk": 269196,
       "lastCrawledAt": "2026-11-11T01:51:18.930Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 9
     },
@@ -391,7 +391,7 @@
       "totalCollectedCount": 80,
       "rawBytesOnDisk": 234927,
       "lastCrawledAt": "2026-11-11T01:51:23.212Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 10
     },
@@ -414,7 +414,7 @@
       "totalCollectedCount": 96,
       "rawBytesOnDisk": 328230,
       "lastCrawledAt": "2026-11-11T01:51:30.024Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 6
     },
@@ -437,7 +437,7 @@
       "totalCollectedCount": 97,
       "rawBytesOnDisk": 268890,
       "lastCrawledAt": "2026-11-11T01:51:36.180Z",
-      "lastProcessedAt": "2026-11-11T18:41:25.280Z",
+      "lastProcessedAt": "2026-11-12T02:10:42.949Z",
       "lastCompletedDate": "2026-10-31",
       "lastDateItemCount": 9
     }
