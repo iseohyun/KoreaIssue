@@ -8,6 +8,14 @@ export type MainMenuView =
   | 'ABOUT'; // 소개
 
 export type MediaAnalysisTab = 'NEWSPAPER' | 'BROADCAST';
+export type IssueSummaryTab =
+  | 'TODAY' // 오늘
+  | 'THIS_WEEK' // 이번주
+  | 'THIS_MONTH' // 이번달
+  | 'YESTERDAY' // 어제
+  | 'LAST_WEEK' // 저번주
+  | 'LAST_MONTH' // 저번달
+  | 'SEARCH'; // 검색
 export type DbStatsTab = 'CHANNEL_INFO' | 'BROADCAST_SCRIPT' | 'RSS_ANALYSIS';
 export type AnnualIssuesTab = 'TABLE' | 'TIMELINE';
 
@@ -38,6 +46,8 @@ export interface IssueFilterState {
   searchQuery: string;
   selectedKeyword: string | null;
   mediaFilter: 'ALL' | 'CROSS_MEDIA' | 'NEWSPAPER_ONLY' | 'BROADCAST_ONLY';
+  mediaTypes: Array<'NEWSPAPER' | 'BROADCAST'>;
+  shortNameView: boolean;
   selectedChannelId: string;
   minMentionCount: number;
 }
@@ -111,6 +121,7 @@ export interface ImpactMetrics {
 }
 
 export interface IssueCard {
+  uuid?: string;
   issueId: string;
   eventTitle?: string;
   title: string;
@@ -157,6 +168,15 @@ export interface StorageSummary {
   newestRawDate: string | null;
 }
 
+export interface ArticleIndexRecord {
+  id: string;
+  ch: string;
+  dt: string;
+  t: string;
+  b: string;
+  u: string | null;
+}
+
 export interface IssuesSummaryPayload {
   version: string;
   generatedAt: string;
@@ -173,6 +193,7 @@ export interface IssuesSummaryPayload {
   publicSearchTrends?: PublicSearchTrendItem[];
   recommendedKeywords: RecommendedKeyword[];
   issues: IssueCard[];
+  articleRecords?: ArticleIndexRecord[];
 }
 
 export interface DateRangeItem {

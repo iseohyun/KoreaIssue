@@ -94,19 +94,27 @@ export function isDateCompleted(channelCheckpoint, dateStr) {
 }
 
 /**
- * 어제(yesterdayStr)부터 과거로 내려가면서 아직 수집되지 않은 날짜 목록(targetCount일 분량)을 반환
- * - 진행 중 중단된 날짜(`inProgress.date`)가 있으면 최우선으로 포함
+ * 어제(yesterdayStr) 또는 오늘(includeToday=true일 때)부터 과거로 내려가면서 수집 대상 날짜 목록을 반환
+ * - includeToday가 true인 경우, 오늘(당일)은 진행 중인 날짜이므로 완료 여부와 무관하게 항상 최우선 포함하여 최신 속보를 반영
+ * - 진행 중 중단된 날짜(`inProgress.date`)가 있으면 우선 포함
  */
 export function getNextTargetDatesForChannel(
   channelCheckpoint,
   yesterdayStr = getKstDateString(-1),
   maxDaysToFetch = 1,
-  minHorizonDate = '2025-01-01'
+  minHorizonDate = '2025-01-01',
+  includeToday = false
 ) {
   const targets = [];
+  const todayStr = getKstDateString(0);
+
+  if (includeToday) {
+    targets.push(todayStr);
+  }
 
   if (
     channelCheckpoint?.inProgress?.date &&
+    !targets.includes(channelCheckpoint.inProgress.date) &&
     !isDateCompleted(channelCheckpoint, channelCheckpoint.inProgress.date)
   ) {
     targets.push(channelCheckpoint.inProgress.date);
@@ -114,9 +122,17 @@ export function getNextTargetDatesForChannel(
 
   let cursorDate = yesterdayStr;
   while (targets.length < maxDaysToFetch && cursorDate >= minHorizonDate) {
+    const rawFilePath = path.join(
+      RAW_DATA_DIR,
+      cursorDate,
+      `${channelCheckpoint?.channelId || ''}.json`
+    );
+    const hasRawFileOnDisk =
+      channelCheckpoint?.channelId && fs.existsSync(rawFilePath);
+
     if (
       !targets.includes(cursorDate) &&
-      !isDateCompleted(channelCheckpoint, cursorDate)
+      (!isDateCompleted(channelCheckpoint, cursorDate) || !hasRawFileOnDisk)
     ) {
       targets.push(cursorDate);
     }

@@ -33,6 +33,12 @@ function formatSubscriberUnit(val: number): string {
   return val.toLocaleString();
 }
 
+/** 상세 표 td 전용: 숫자만 기록 (단위: 만) */
+function formatSubscriberNumberInMan(val: number): string {
+  const man = val / 10000;
+  return man.toFixed(1);
+}
+
 export const MediaAnalysisView: React.FC<MediaAnalysisViewProps> = ({
   activeTab,
   searchQuery = '',
@@ -327,17 +333,6 @@ export const MediaAnalysisView: React.FC<MediaAnalysisViewProps> = ({
                 </span>
               </div>
 
-              {/* 10위 당해 구독자 수 기준 수직 점선 */}
-              <div
-                className={styles.cutlineValueVertical}
-                style={{
-                  left: `${Math.min(
-                    100,
-                    Math.max(1, (cutlineRank10Value / activeMaxAxis) * 100)
-                  )}%`,
-                }}
-              />
-
               {rankedWithPositions.map((item) => {
                 const widthPct = Math.max(
                   1.5,
@@ -419,58 +414,42 @@ export const MediaAnalysisView: React.FC<MediaAnalysisViewProps> = ({
 
       {/* 2. 신문/방송 분리 상세 연도별 표 */}
       <section className={styles.tableCard}>
-        <div>
+        <div className={styles.tableHeaderRow}>
           <h3 className={styles.chartTitle}>
             {activeTab === 'NEWSPAPER'
               ? '종합일간지 1~20위 연도별 구독자 수 상세 표 (신문사 전용)'
               : '방송사 공식 뉴스 유튜브 1~20위 연도별 구독자 수 상세 표 (방송사 전용)'}
           </h3>
-          <p className={styles.chartSub}>
-            붉은 점선 위쪽(1~10위권)이 현재 KoreaIssues 수집 대상 채널로 채택된 매체입니다.
-          </p>
+          <span className={styles.tableUnitCaption}>(단위, 만)</span>
         </div>
 
         <div className={styles.tableWrapper}>
           <table className={styles.dataTable}>
             <thead>
               <tr>
-                <th>{currentYear}년 순위</th>
-                <th>별명 (정식 명칭)</th>
-                <th>채택 상태</th>
+                <th>순위</th>
+                <th>별명</th>
                 {TREND_YEARS.map((yr) => (
                   <th
                     key={yr}
                     className={yr === currentYear ? styles.activeYearCol : ''}
                   >
-                    {yr}년
+                    {String(yr).slice(-2)}
                   </th>
                 ))}
-                <th style={{ textAlign: 'left' }}>산정 기준 및 비고</th>
               </tr>
             </thead>
             <tbody>
               {sortedTableRows.map((row) => (
                 <tr
                   key={row.id}
-                  className={`${row.rank <= 10 ? styles.rowTop10 : ''} ${
-                    row.rank === 10 ? styles.rowCutlineBorder : ''
-                  }`}
+                  className={row.rank <= 10 ? styles.rowTop10 : ''}
                 >
                   <td>
-                    <strong>{row.rank}위</strong>
+                    <strong>{row.rank}</strong>
                   </td>
-                  <td>
-                    <strong>{row.alias}</strong>{' '}
-                    <span style={{ color: '#64748b', fontSize: '0.73rem' }}>
-                      ({row.name} · {row.category})
-                    </span>
-                  </td>
-                  <td>
-                    {row.adopted ? (
-                      <span className={styles.adoptedBadge}>수집 채택</span>
-                    ) : (
-                      <span className={styles.candidateBadge}>커트라인 외</span>
-                    )}
+                  <td title={`${row.name} (${row.category})`}>
+                    <strong>{row.alias}</strong>
                   </td>
                   {TREND_YEARS.map((yr) => (
                     <td
@@ -478,16 +457,47 @@ export const MediaAnalysisView: React.FC<MediaAnalysisViewProps> = ({
                       className={yr === currentYear ? styles.activeYearCol : ''}
                       title={`${(row.yearlySubscribers[yr] || 0).toLocaleString()}명`}
                     >
-                      {formatSubscriberUnit(row.yearlySubscribers[yr] || 0)}
+                      {formatSubscriberNumberInMan(
+                        row.yearlySubscribers[yr] || 0
+                      )}
                     </td>
                   ))}
-                  <td style={{ textAlign: 'left', color: '#475569' }}>
-                    {row.note}
-                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* 산정 기준 표 외부 주석 (표 아래) */}
+        <div className={styles.tableFootnoteBox}>
+          {activeTab === 'NEWSPAPER' ? (
+            <>
+              <p className={styles.tableFootnoteTitle}>※ 산정 기준 (신문사 전용)</p>
+              <ul className={styles.tableFootnoteList}>
+                <li>
+                  <strong>2017~2021년:</strong> 한국ABC협회 공식 인증 발표 유료부수 기준
+                </li>
+                <li>
+                  <strong>2022~2026년:</strong> 한국언론진흥재단 매체 수용자 조사 및 포털·디지털 유료 구독(더중앙플러스 등)·후원 회원 통합 유효 구독자 연계 산정 기준
+                </li>
+                <li>
+                  <strong>수집 채택 범위:</strong> 전국 종합일간지 상위 1~10위 매체 상시 수집 (11~20위는 지역종합일간지 및 커트라인 비교군)
+                </li>
+              </ul>
+            </>
+          ) : (
+            <>
+              <p className={styles.tableFootnoteTitle}>※ 산정 기준 (방송사 전용)</p>
+              <ul className={styles.tableFootnoteList}>
+                <li>
+                  <strong>2017~2026년:</strong> 각 방송사 공식 대표 뉴스 유튜브 채널(1:1 매핑)의 연도별 누적 구독자 수(명) 기준
+                </li>
+                <li>
+                  <strong>수집 채택 범위:</strong> 지상파 3사(KBS·MBC·SBS), 종편 4사(JTBC·TV조선·채널A·MBN), 보도전문 2사(YTN·연합뉴스TV) 등 상위 공식 종합 뉴스 채널 9곳 상시 수집 (경제·지역·특수 방송 비교군 포함)
+                </li>
+              </ul>
+            </>
+          )}
         </div>
       </section>
     </div>

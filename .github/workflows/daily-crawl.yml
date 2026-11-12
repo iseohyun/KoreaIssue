@@ -25,6 +25,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Restore cached raw media scripts (30-day rolling window)
+        uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: raw-scripts-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            raw-scripts-${{ runner.os }}-
+
       - name: Run raw script collection & issue summary pipeline
         run: npm run pipeline
 

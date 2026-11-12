@@ -21,11 +21,12 @@ import { fetchTextSafe, cleanXmlText } from './analyze-media-parsers.mjs';
 
 function parseCliOptions() {
   const args = process.argv.slice(2);
-  let days = 1;
-  let maxPagesPerDay = 1;
-  let maxArticlesPerPage = 12;
+  let days = 2;
+  let maxPagesPerDay = 5;
+  let maxArticlesPerPage = 20;
   let force = false;
-  let includeToday = false;
+  let includeToday = true;
+  let explicitDates = [];
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--days' && args[i + 1]) {
@@ -37,13 +38,28 @@ function parseCliOptions() {
     } else if (args[i] === '--max-articles' && args[i + 1]) {
       maxArticlesPerPage = Math.max(3, Number(args[i + 1]) || 12);
       i++;
+    } else if (args[i] === '--dates' && args[i + 1]) {
+      explicitDates = args[i + 1]
+        .split(',')
+        .map((d) => d.trim())
+        .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d));
+      i++;
     } else if (args[i] === '--force') {
       force = true;
     } else if (args[i] === '--include-today') {
       includeToday = true;
+    } else if (args[i] === '--no-today') {
+      includeToday = false;
     }
   }
-  return { days, maxPagesPerDay, maxArticlesPerPage, force, includeToday };
+  return {
+    days,
+    maxPagesPerDay,
+    maxArticlesPerPage,
+    force,
+    includeToday,
+    explicitDates,
+  };
 }
 
 /**
@@ -305,7 +321,7 @@ export function appendOrUpdateMetricSnapshot(
  * 개별 네이버 뉴스 상세 페이지에서 제목, 최초 입력시각(publishedAt), 원문 URL(originalUrl), 본문 문장 배열 및 확장 메타데이터 파싱
  * - v2.0 스키마: 중복 텍스트 필드(`scriptText`)를 제거하고 `sentences`, `urls`, `meta`, `metrics` 구조로 저장
  */
-async function fetchPortalArticleDetail(articleUrl, channel) {
+async function fetchPortalArticleDetail(articleUrl, channel, fallbackDateStr = '') {
   const res = await fetchTextSafe(articleUrl, 9000);
   if (!res.ok || !res.text) return null;
   const html = res.text;
@@ -355,7 +371,8 @@ async function fetchPortalArticleDetail(articleUrl, channel) {
   // 고유 기사 ID
   const idMatch = articleUrl.match(/\/article\/(\d+)\/(\d+)/);
   const itemId = idMatch ? `${channel.id}-${idMatch[1]}-${idMatch[2]}` : `${channel.id}-${Date.now()}`;
-  const finalPubAt = publishedAt || `${getKstDateString(-1)} 12:00:00`;
+  const finalPubAt =
+    publishedAt || `${fallbackDateStr || getKstDateString(-1)} 12:00:00`;
 
   const meta = extractRichEditorialMeta({
     title,
@@ -477,7 +494,7 @@ async function collectNewspaperForDate(
       const itemId = idMatch ? `${channel.id}-${idMatch[1]}-${idMatch[2]}` : link;
       if (collectedMap.has(itemId)) continue;
 
-      const detail = await fetchPortalArticleDetail(link, channel);
+      const detail = await fetchPortalArticleDetail(link, channel, dateStr);
       if (detail && detail.sentences.length > 0) {
         // 해당 날짜(dateStr)에 송고된 기사인지 확인
         collectedMap.set(detail.itemId, detail);
@@ -583,6 +600,11 @@ async function collectBroadcasterForDate(
           }
         }
 
+        // 해당 수집 대상 일자(dateStr)에 게시된 유튜브 영상만 해당 날짜 파일에 수록
+        if (publishedKst.slice(0, 10) !== dateStr) {
+          continue;
+        }
+
         const rawDesc = descMatch ? descMatch[1] : '';
         const sentences = extractCleanSentences(rawDesc);
         if (sentences.length === 0) continue;
@@ -635,24 +657,29 @@ async function collectBroadcasterForDate(
   // 2) 해당 날짜(dateStr)의 방송사 뉴스 리포트 원고(포털 TV뉴스 아카이브) 보강 수집
   if (channel.naverOid) {
     const dateYmd = dateStr.replace(/-/g, '');
-    const listUrl = `https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=${channel.naverOid}&date=${dateYmd}&page=1`;
-    const listRes = await fetchTextSafe(listUrl, 9000);
-    if (listRes.ok && listRes.text) {
+    const maxBcPages = Math.min(3, options.maxPagesPerDay);
+    for (let page = 1; page <= maxBcPages; page++) {
+      const listUrl = `https://news.naver.com/main/list.naver?mode=LPOD&mid=sec&oid=${channel.naverOid}&date=${dateYmd}&page=${page}`;
+      const listRes = await fetchTextSafe(listUrl, 9000);
+      if (!listRes.ok || !listRes.text) break;
+
       const articleRegex = new RegExp(
         `https://n\\.news\\.naver\\.com/mnews/article/${channel.naverOid}/\\d+`,
         'g'
       );
-      const links = Array.from(new Set(listRes.text.match(articleRegex) || [])).slice(
-        0,
-        Math.min(10, options.maxArticlesPerPage)
-      );
+      const links = Array.from(
+        new Set(listRes.text.match(articleRegex) || [])
+      ).slice(0, options.maxArticlesPerPage);
+      if (links.length === 0) break;
 
       for (const link of links) {
         const idMatch = link.match(/\/article\/(\d+)\/(\d+)/);
-        const itemId = idMatch ? `${channel.id}-${idMatch[1]}-${idMatch[2]}` : link;
+        const itemId = idMatch
+          ? `${channel.id}-${idMatch[1]}-${idMatch[2]}`
+          : link;
         if (collectedMap.has(itemId)) continue;
 
-        const detail = await fetchPortalArticleDetail(link, channel);
+        const detail = await fetchPortalArticleDetail(link, channel, dateStr);
         if (detail && detail.sentences.length > 0) {
           detail.scriptSource = 'BROADCAST_REPORT_SCRIPT';
           collectedMap.set(detail.itemId, detail);
@@ -689,9 +716,10 @@ export async function runRawScriptCollector() {
   const registry = loadChannelRegistry();
   const checkpointState = loadCheckpoints();
   const yesterdayStr = getKstDateString(-1);
+  const todayStr = getKstDateString(0);
 
   console.log(
-    `[RawCollector] 수집 시작 — 기준일(어제): ${yesterdayStr}, 탐색 일수: ${options.days}일, 채널당 페이지: ${options.maxPagesPerDay}`
+    `[RawCollector] 수집 시작 — 오늘: ${todayStr}, 기준일(어제): ${yesterdayStr}, 탐색 일수: ${options.days}일 (당일포함: ${options.includeToday}), 채널당 페이지: ${options.maxPagesPerDay}`
   );
 
   const allChannels = [
@@ -702,16 +730,20 @@ export async function runRawScriptCollector() {
   for (const channel of allChannels) {
     const chCheckpoint = checkpointState.channels[channel.id];
     const startOffset = options.includeToday ? 0 : -1;
-    const baseStartStr = getKstDateString(startOffset);
-    const targetDates = options.force
-      ? Array.from({ length: options.days }, (_, idx) =>
-          getKstDateString(startOffset - idx)
-        )
-      : getNextTargetDatesForChannel(
-          chCheckpoint,
-          baseStartStr,
-          options.days
-        );
+    const targetDates =
+      options.explicitDates.length > 0
+        ? options.explicitDates
+        : options.force
+          ? Array.from({ length: options.days }, (_, idx) =>
+              getKstDateString(startOffset - idx)
+            )
+          : getNextTargetDatesForChannel(
+              chCheckpoint,
+              yesterdayStr,
+              options.days,
+              '2025-01-01',
+              options.includeToday
+            );
 
     if (targetDates.length === 0) {
       console.log(

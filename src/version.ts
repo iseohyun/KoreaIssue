@@ -4,5 +4,5 @@
  * - BUILD_TAG: 일자 기반 캐시 버스팅 태그 (YYYYMMDDvN 형식, 수정/빌드 시 자동 갱신)
  */
 export const SEMVER = '0.1.0';
-export const BUILD_TAG = '20261109v6';
+export const BUILD_TAG = '20261112v3';
 export const APP_VERSION_DISPLAY = `v${SEMVER} (${BUILD_TAG})`;

@@ -10,6 +10,7 @@
  *   4) 2차 파급력(조회수·좋아요 48h 숙성 보정) 및 구글 급상승 검색어(KR) 비교를 통한
  *      [언론 보도 강도(Media Push) vs 실제 대중 소비·검색 점수(Public Pull)] 산출
  */
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
@@ -34,10 +35,18 @@ export const ISSUES_SUMMARY_PATH = path.join(
   'issues-summary.json'
 );
 
+/**
+ * 이슈 문서 고유 식별자(issueId)로부터 결정론적 UUID(v5 형식)를 생성
+ */
+export function generateDeterministicUuid(seedStr = '') {
+  const hex = crypto.createHash('sha1').update(String(seedStr)).digest('hex');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
+}
+
 const STOPWORDS = new Set([
   '기자', '뉴스', '보도', '사진', '영상', '제공', '연합', '연합뉴스', '뉴시스', '뉴스1',
   '오늘', '어제', '내일', '이번', '지난', '최근', '현재', '오전', '오후', '시간', '경우',
-  '관련', '대한', '통해', '위해', '대해', '따르면', '가운데', '이후', '당시', '결과',
+  '관련', '대한', '통해', '위해', '대해', '따르면', '가운데', '이후', '당시', '당시엔', '결과',
   '입장', '설명', '주장', '말씀', '생각', '부분', '문제', '상황', '모습', '자리', '시작',
   '가능성', '필요', '예정', '계획', '방침', '수준', '정도', '이상', '이하', '전체', '일부',
   '서울', '한국', '우리', '국민', '정부', '대통령', '의원', '대표', '장관', '관계자',
@@ -50,6 +59,8 @@ const STOPWORDS = new Set([
   '이슈PLAY', '에디터픽', '뉴스플레이리스트', '현장영상', '풀영상', '자막뉴스', '취재파일',
   '일찍', '내린', '많이', '가장', '처음', '다시', '계속', '모두', '직접', '함께', '결국',
   '강하게', '돌아올', '사실상', '본격', '긴급', '올해', '내년', '하루', '이틀', 'MBC중계방송',
+  '시사팩트', '신통방통', '뉴스7', '뉴스9', '뉴스A', '시대', '시대에', '발칵', '몰랐다', '통하다니',
+  '만에', '없어', '다친', '떠났다', '찾아', '무슨', '달째', '없이',
 ]);
 
 // 어미/조사로 오인하여 끝 글자(이/의/가/로/도/만 등)를 잘라내면 안 되는 명사 원형 보호 목록
@@ -68,6 +79,7 @@ const GENERIC_NON_ISSUE_TERMS = new Set([
   '요구', '추진', '진술', '핵심', '의심', '반박', '비판', '공방', '우려', '사태',
   '현장', '질문', '답변', '이유', '논의', '대응', '발언', '공개', '언급', '강조',
   '투자', '모델', '출시', '개발', '지원', '확대', '개최', '진행', '마련', '선정',
+  '남편', '아내', '가족', '집안', '성공', '인정', '미션', '포커', '집중',
 ]);
 
 function isGenericOrDatePhrase(phrase = '') {
@@ -83,7 +95,7 @@ function isGenericOrDatePhrase(phrase = '') {
 }
 
 const POSTPOSITION_RE =
-  /(에서는|에서부터|으로부터|에게는|한테는|이라고|라면서|이라며|으로만|까지도|조차도|마저도|에서|에게|한테|으로|로써|로서|보다|처럼|만큼|같이|까지|부터|마저|조차|이나|거나|든지|란|이란|는|은|이|가|을|를|의|에|로|와|과|도|만)$/;
+  /(에서는|에서부터|으로부터|에게는|한테는|이라고|라면서|이라며|으로만|까지도|조차도|마저도|에서|에게|한테|으로|로써|로서|보다|처럼|만큼|같이|까지|부터|마저|조차|이나|거나|든지|란|이란|엔|는|은|이|가|을|를|의|에|로|와|과|도|만)$/;
 
 export function normalizeKoreanToken(rawToken = '') {
   let cleaned = String(rawToken)
@@ -91,8 +103,12 @@ export function normalizeKoreanToken(rawToken = '') {
     .trim();
   if (cleaned.length < 2) return '';
 
-  // 동사/형용사/부사형 어미 배제
-  if (/(했다|밝혔다|전했다|말했다|보인다|나타났다|된다|됐다|있다|없다|이다|아니다|한다|하며|하고|하는|해서|한|된|할|될|내린|올린|열린|모인|숨진|잡힌|돌아올|강하게|빠르게|크게|작게)$/.test(cleaned)) {
+  // 동사/형용사/부사형 및 인용 구어체 어미 배제 (예: 몰랐다, 통하다니, 자제해야, 지르겠다, 작업하던 등)
+  if (
+    /(했다|밝혔다|전했다|말했다|보인다|나타났다|된다|됐다|있다|없다|이다|아니다|한다|하며|하고|하는|해서|한|된|할|될|내린|올린|열린|모인|숨진|잡힌|돌아올|강하게|빠르게|크게|작게|랐다|았다|었다|였다|겠다|다니|라니|더니|던데|해야|하면|하던|받았|받고|털어|새는)$/.test(
+      cleaned
+    )
+  ) {
     return '';
   }
 
@@ -162,7 +178,8 @@ export function extractKeywordsAndCompounds(text = '') {
 }
 
 /**
- * 클러스터 내 기사 제목들로부터 가장 구체적인 사건명(2~3어절, 예: "여자친구 살해 남성", "젠슨 황 스파이 불륜") 합성
+ * 클러스터 내 기사 제목 + 본문 리드 문장들로부터 가장 구체적인 사건명(2~3어절) 합성
+ * - 제목이 인용구/은유('당시엔 몰랐다 스파이', '시대 미인계 통하다니')로만 되어 있어도 본문 리드 문장의 핵심 주체('젠슨', '엔비디아', '불륜')를 함께 반영
  */
 function buildSpecificEventKeywords(items = []) {
   const phraseScores = new Map();
@@ -176,13 +193,20 @@ function buildSpecificEventKeywords(items = []) {
       extractKeywordsAndCompounds(cleanTitle);
 
     for (const tk of singleTokens) {
-      tokenFreq.set(tk, (tokenFreq.get(tk) || 0) + 1);
+      tokenFreq.set(tk, (tokenFreq.get(tk) || 0) + 2);
     }
     for (const c3 of compound3Tokens) {
       phraseScores.set(c3, (phraseScores.get(c3) || 0) + 5);
     }
     for (const c2 of compound2Tokens) {
       phraseScores.set(c2, (phraseScores.get(c2) || 0) + 3);
+    }
+
+    // 본문 첫 2문장의 핵심 명사도 가중치(1점)로 합산하여 제목에서 생략된 핵심 고유명사 보완
+    const leadBody = (it.sentences || []).slice(0, 2).join(' ');
+    const bodyKw = extractKeywordsAndCompounds(leadBody);
+    for (const tk of bodyKw.singleTokens) {
+      tokenFreq.set(tk, (tokenFreq.get(tk) || 0) + 1);
     }
   }
 
@@ -502,25 +526,57 @@ export async function runIssueProcessorAndPurge() {
     ]);
   }
 
-  // 기사 클러스터링: 동일 사건을 다루는 기사끼리 묶기 (핵심 사건 명사 2개 이상 + 결합어 공유)
+  function getItemDateOnly(it) {
+    return String(it.publishedAt || it.dateStr || todayStr).slice(0, 10);
+  }
+
+  function getDaysDiff(dateA, dateB) {
+    const msA = Date.parse(`${dateA}T00:00:00Z`);
+    const msB = Date.parse(`${dateB}T00:00:00Z`);
+    if (Number.isNaN(msA) || Number.isNaN(msB)) return 0;
+    return Math.abs(msA - msB) / (86400 * 1000);
+  }
+
+  // 기사 클러스터링: 날짜나 제목 표현(비유·인용구)이 달라도 본문 리드 문장의 핵심 주체·사건이 같으면 하나로 묶기
   const rawClusters = [];
   for (const item of allItems) {
+    const itemDate = getItemDateOnly(item);
     let bestCluster = null;
     let bestScore = 0;
 
     for (const cl of rawClusters) {
+      if (getDaysDiff(itemDate, cl.firstDate) > 31) continue;
+
       let sharedTitleSingles = 0;
+      let sharedBodySingles = 0;
       let sharedCompounds = 0;
 
       for (const tk of item._titleSingles) {
-        if (cl.seedTitleSingles.has(tk)) sharedTitleSingles += 1;
+        if (cl.seedTitleSingles.has(tk) || cl.titleSingleSet.has(tk)) {
+          sharedTitleSingles += 1;
+        }
+      }
+      for (const tk of item._allSingles) {
+        if (cl.seedTitleSingles.has(tk)) {
+          sharedBodySingles += 1;
+        }
       }
       for (const cp of item._allCompounds) {
-        if (cl.seedCompounds.has(cp)) sharedCompounds += 1;
+        if (cl.seedCompounds.has(cp) || cl.compoundSet.has(cp)) {
+          sharedCompounds += 1;
+        }
       }
 
-      const score = sharedTitleSingles * 2.5 + sharedCompounds * 3;
-      if (sharedTitleSingles >= 2 && score >= 6.5 && score > bestScore) {
+      const score =
+        sharedTitleSingles * 2.5 +
+        sharedBodySingles * 1.5 +
+        sharedCompounds * 3;
+      const isStrongMatch =
+        (sharedTitleSingles >= 2 && score >= 6.0) ||
+        (sharedTitleSingles >= 1 && sharedBodySingles >= 3 && score >= 7.0) ||
+        (sharedBodySingles >= 3 && sharedCompounds >= 1 && score >= 7.5);
+
+      if (isStrongMatch && score > bestScore) {
         bestScore = score;
         bestCluster = cl;
       }
@@ -528,11 +584,15 @@ export async function runIssueProcessorAndPurge() {
 
     if (bestCluster) {
       bestCluster.items.push(item);
+      if (itemDate > bestCluster.latestDate) bestCluster.latestDate = itemDate;
+      if (itemDate < bestCluster.firstDate) bestCluster.firstDate = itemDate;
       for (const tk of item._titleSingles) bestCluster.titleSingleSet.add(tk);
       for (const cp of item._allCompounds) bestCluster.compoundSet.add(cp);
     } else {
       rawClusters.push({
         items: [item],
+        firstDate: itemDate,
+        latestDate: itemDate,
         seedTitleSingles: new Set(item._titleSingles),
         seedCompounds: new Set(item._allCompounds),
         titleSingleSet: new Set(item._titleSingles),
@@ -541,11 +601,18 @@ export async function runIssueProcessorAndPurge() {
     }
   }
 
-  // 2차 클러스터 병합: 어제~오늘에 걸쳐 후속 속보로 제목 각도가 조금씩 달라진 동일 사건 클러스터 통합
+  // 2차 클러스터 병합: 날짜가 다르거나 제목이 인용구·비유('당시엔 몰랐다 스파이', '시대 미인계 통하다니')로 뽑힌 동일 맥락 클러스터 통합
   const clusters = [];
   for (const cl of rawClusters.sort((a, b) => b.items.length - a.items.length)) {
     const freqMap = new Map();
+    const titleFreqMap = new Map();
     for (const it of cl.items) {
+      for (const tk of it._titleSingles) {
+        if (!isGenericOrDatePhrase(tk)) {
+          titleFreqMap.set(tk, (titleFreqMap.get(tk) || 0) + 1);
+          freqMap.set(tk, (freqMap.get(tk) || 0) + 2);
+        }
+      }
       for (const tk of it._allSingles) {
         if (!isGenericOrDatePhrase(tk)) {
           freqMap.set(tk, (freqMap.get(tk) || 0) + 1);
@@ -555,33 +622,57 @@ export async function runIssueProcessorAndPurge() {
     const tokensA = new Set(
       Array.from(freqMap.entries())
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 6)
+        .slice(0, 8)
         .map(([k]) => k)
     );
+    const titleTokensA = new Set(
+      Array.from(titleFreqMap.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([k]) => k)
+    );
+
     let mergedInto = null;
     for (const target of clusters) {
+      if (getDaysDiff(cl.firstDate, target.firstDate) > 31) {
+        continue;
+      }
       let overlapCnt = 0;
       for (const t of tokensA) {
         if (target._coreKwTokens.has(t)) overlapCnt += 1;
       }
-      if (overlapCnt >= 3) {
+      let titleOverlapCnt = 0;
+      for (const t of titleTokensA) {
+        if (target._titleKwTokens.has(t) || target._coreKwTokens.has(t)) {
+          titleOverlapCnt += 1;
+        }
+      }
+      if (overlapCnt >= 3 || (titleOverlapCnt >= 2 && overlapCnt >= 2)) {
         mergedInto = target;
         break;
       }
     }
     if (mergedInto) {
       mergedInto.items.push(...cl.items);
+      if (cl.latestDate > mergedInto.latestDate) {
+        mergedInto.latestDate = cl.latestDate;
+      }
+      if (cl.firstDate < mergedInto.firstDate) {
+        mergedInto.firstDate = cl.firstDate;
+      }
       for (const tk of cl.titleSingleSet) mergedInto.titleSingleSet.add(tk);
       for (const cp of cl.compoundSet) mergedInto.compoundSet.add(cp);
       for (const t of tokensA) mergedInto._coreKwTokens.add(t);
+      for (const t of titleTokensA) mergedInto._titleKwTokens.add(t);
     } else {
       cl._coreKwTokens = tokensA;
+      cl._titleKwTokens = titleTokensA;
       clusters.push(cl);
     }
   }
 
-  // 구체적 사건성이 검증된 클러스터만 선별 (최소 2건 이상 보도 & 구체적 사건 키워드 보유)
-  const validClusters = clusters
+  // 구체적 사건성이 검증된 클러스터 선별 및 사건명·본문 핵심주체 기준 3차 중복 맥락 완전 통합
+  const preValidClusters = clusters
     .map((cl) => {
       const specificKeywords = buildSpecificEventKeywords(cl.items);
       return {
@@ -596,6 +687,58 @@ export async function runIssueProcessorAndPurge() {
         !isGenericOrDatePhrase(cl.specificKeywords[0])
     )
     .sort((a, b) => b.items.length - a.items.length);
+
+  const validClusters = [];
+  for (const cl of preValidClusters) {
+    const kwWords = new Set(
+      cl.specificKeywords
+        .slice(0, 3)
+        .join(' ')
+        .split(/\s+/)
+        .filter((w) => w.length >= 2 && !isGenericOrDatePhrase(w))
+    );
+    const coreWords = new Set([...kwWords, ...(cl._coreKwTokens || [])]);
+    let sameTopicTarget = null;
+    for (const existing of validClusters) {
+      let sharedKw = 0;
+      for (const w of kwWords) {
+        if (existing._kwWords.has(w)) sharedKw += 1;
+      }
+      let sharedCore = 0;
+      for (const w of coreWords) {
+        if (existing._coreWords.has(w)) sharedCore += 1;
+      }
+      if (sharedKw >= 2 || (sharedKw >= 1 && sharedCore >= 3) || sharedCore >= 4) {
+        sameTopicTarget = existing;
+        break;
+      }
+    }
+    if (sameTopicTarget) {
+      const seenItemIds = new Set(sameTopicTarget.items.map((i) => i.itemId));
+      for (const it of cl.items) {
+        if (!seenItemIds.has(it.itemId)) {
+          sameTopicTarget.items.push(it);
+          seenItemIds.add(it.itemId);
+        }
+      }
+      if (cl.latestDate > sameTopicTarget.latestDate) {
+        sameTopicTarget.latestDate = cl.latestDate;
+      }
+      if (cl.firstDate < sameTopicTarget.firstDate) {
+        sameTopicTarget.firstDate = cl.firstDate;
+      }
+      sameTopicTarget.specificKeywords = buildSpecificEventKeywords(
+        sameTopicTarget.items
+      );
+      for (const w of kwWords) sameTopicTarget._kwWords.add(w);
+      for (const w of coreWords) sameTopicTarget._coreWords.add(w);
+    } else {
+      cl._kwWords = kwWords;
+      cl._coreWords = coreWords;
+      validClusters.push(cl);
+    }
+  }
+  validClusters.sort((a, b) => b.items.length - a.items.length);
 
   // 전체 추천 키워드도 구체적 사건 키워드만 추출
   const recommendedKeywords = [];
@@ -615,16 +758,22 @@ export async function runIssueProcessorAndPurge() {
     }
   }
 
-  // 이슈 카드 생성 및 타임라인/파급력 점수 계산
+  // 이슈 카드 생성 및 타임라인/파급력 점수 계산 (일자별 최대 언급/조회수 기준으로 정규화하여 날짜별 점수 왜곡 방지)
   const issueCards = [];
-  let maxClusterMentions = Math.max(
-    1,
-    ...validClusters.map((c) => c.items.length)
-  );
-  let maxClusterMaturedViews = 1;
+  const maxMentionsByDate = new Map();
+  const maxMaturedViewsByDate = new Map();
+
+  for (const cl of validClusters) {
+    const d = cl.firstDate || todayStr;
+    const prevM = maxMentionsByDate.get(d) || 1;
+    if (cl.items.length > prevM) {
+      maxMentionsByDate.set(d, cl.items.length);
+    }
+  }
 
   // 1차 패스: 각 클러스터의 48h 숙성 조회수 합산 최대치 파악
   const clusterViewSums = validClusters.map((cl) => {
+    const d = cl.firstDate || todayStr;
     let rawViews = 0;
     let maturedViews = 0;
     let likes = 0;
@@ -635,8 +784,9 @@ export async function runIssueProcessorAndPurge() {
       likes += l;
       maturedViews += estimate48hMaturedViews(v, it.publishedAt);
     }
-    if (maturedViews > maxClusterMaturedViews) {
-      maxClusterMaturedViews = maturedViews;
+    const prevV = maxMaturedViewsByDate.get(d) || 1;
+    if (maturedViews > prevV) {
+      maxMaturedViewsByDate.set(d, maturedViews);
     }
     return { rawViews, maturedViews, likes };
   });
@@ -651,6 +801,11 @@ export async function runIssueProcessorAndPurge() {
     const primaryEventKeyword = cl.specificKeywords[0];
     const firstDate = (sortedItems[0].publishedAt || todayStr).slice(0, 10);
     const issueId = `issue-${firstDate}-${primaryEventKeyword.replace(/\s+/g, '-')}`;
+    const issueUuid = generateDeterministicUuid(issueId);
+
+    for (const it of sortedItems) {
+      it._issueUuid = issueUuid;
+    }
 
     const byChannel = {};
     let newspaperCount = 0;
@@ -727,8 +882,16 @@ export async function runIssueProcessorAndPurge() {
             );
           }
           attachedToAnyFact = true;
-        } else if (!addedNewFactFromThisArticle && facts.length < 6) {
-          // 새로운 문장 추가: 이 문장이 최초 보도 이후 '새로운 키워드/단서'를 추가했는지 계산
+        } else if (!addedNewFactFromThisArticle && facts.length < 14) {
+          const itemDateOnly = String(it.publishedAt || '').slice(0, 10);
+          const sameDayFactCount = facts.filter(
+            (f) => String(f.addedAt || '').slice(0, 10) === itemDateOnly
+          ).length;
+          if (sameDayFactCount >= 5) {
+            continue;
+          }
+
+          // 새로운 문장 추가: 이 문장이 최초 보도 이후 '새로운 키워드/단서'를 추가했거나 다음 날 이후 후속(추가) 보도인지 계산
           const sentKw = extractKeywordsAndCompounds(sent);
           const newlyAddedKeywords = sentKw.allCompounds
             .filter(
@@ -747,12 +910,20 @@ export async function runIssueProcessorAndPurge() {
             }
           }
 
-          if (facts.length === 0 || newlyAddedKeywords.length > 0) {
+          const isFollowUpDate =
+            Boolean(itemDateOnly) && itemDateOnly > firstDate;
+
+          if (
+            facts.length === 0 ||
+            newlyAddedKeywords.length > 0 ||
+            isFollowUpDate
+          ) {
             for (const sg of sentKw.singleTokens) {
               knownIssueTokens.add(sg);
             }
 
-            const isNewFactAdded = itemIdx > 0 && newlyAddedKeywords.length > 0;
+            const isNewFactAdded =
+              itemIdx > 0 && (newlyAddedKeywords.length > 0 || isFollowUpDate);
 
             facts.push({
               factId: `${issueId}-f${facts.length + 1}`,
@@ -819,12 +990,14 @@ export async function runIssueProcessorAndPurge() {
       }
     }
 
-    // 언론 보도 강도 점수 (Media Push Score: 0~100)
+    // 언론 보도 강도 점수 (Media Push Score: 0~100, 해당 일자 최대치 기준)
+    const dayMaxMentions = maxMentionsByDate.get(firstDate) || 10;
+    const dayMaxViews = maxMaturedViewsByDate.get(firstDate) || 1;
     const uniqueChannelsCount = Object.keys(byChannel).length;
     const mediaPushScore = Math.min(
       100,
       Math.round(
-        (sortedItems.length / maxClusterMentions) * 55 +
+        (sortedItems.length / dayMaxMentions) * 55 +
           (uniqueChannelsCount / 12) * 35 +
           (newspaperCount > 0 && broadcastCount > 0 ? 10 : 0)
       )
@@ -832,9 +1005,9 @@ export async function runIssueProcessorAndPurge() {
 
     // 실제 대중 소비·검색 점수 (Public Pull Score: 0~100)
     const viewRatio =
-      maxClusterMaturedViews > 0
+      dayMaxViews > 0
         ? Math.log10(1 + viewMetrics.maturedViews) /
-          Math.log10(1 + maxClusterMaturedViews)
+          Math.log10(1 + dayMaxViews)
         : 0;
     const trendBonus = matchedTrend ? 25 : 0;
     const publicPullScore = Math.min(
@@ -883,6 +1056,7 @@ export async function runIssueProcessorAndPurge() {
       !isGenericOrDatePhrase(primaryEventKeyword);
 
     issueCards.push({
+      uuid: issueUuid,
       issueId,
       eventTitle: primaryEventKeyword,
       title: cleanedSummaryTitle || primaryEventKeyword,
@@ -954,12 +1128,65 @@ export async function runIssueProcessorAndPurge() {
   }
   saveCheckpoints(checkpointState);
 
+  const articleRecords = allItems.map((it) => ({
+    id: it.itemId,
+    ch: it.channelId,
+    dt: String(it.publishedAt || it.dateStr || todayStr).slice(0, 10),
+    t: String(it.title || ''),
+    b: (it.sentences || []).slice(0, 3).join(' ').slice(0, 240),
+    u: it._issueUuid || null,
+  }));
+
+  // CI(GitHub Actions 등) 또는 Raw 파일 일부 폐기 환경에서 기존 issues-summary.json의 과거 날짜 이슈가 유실되지 않도록 병합 보존
+  const activeRawDateSet = new Set(rawFiles.map((rf) => rf.dateStr));
+  if (fs.existsSync(ISSUES_SUMMARY_PATH)) {
+    try {
+      const prevSummary = JSON.parse(
+        fs.readFileSync(ISSUES_SUMMARY_PATH, 'utf-8')
+      );
+      const existingIds = new Set(issueCards.map((c) => c.issueId));
+      for (const prevIssue of prevSummary.issues || []) {
+        const prevDate = String(prevIssue.latestReportedAt || '').slice(0, 10);
+        if (
+          prevDate &&
+          !activeRawDateSet.has(prevDate) &&
+          !existingIds.has(prevIssue.issueId)
+        ) {
+          if (!prevIssue.uuid) {
+            prevIssue.uuid = generateDeterministicUuid(prevIssue.issueId);
+          }
+          issueCards.push(prevIssue);
+          existingIds.add(prevIssue.issueId);
+        }
+      }
+      const existingArtIds = new Set(articleRecords.map((a) => a.id));
+      for (const prevArt of prevSummary.articleRecords || []) {
+        if (
+          prevArt.dt &&
+          !activeRawDateSet.has(prevArt.dt) &&
+          !existingArtIds.has(prevArt.id)
+        ) {
+          articleRecords.push(prevArt);
+          existingArtIds.add(prevArt.id);
+        }
+      }
+    } catch {
+      // ignore parse error
+    }
+  }
+
+  issueCards.sort(
+    (a, b) =>
+      b.mentionStats.totalCount - a.mentionStats.totalCount ||
+      String(b.latestReportedAt).localeCompare(String(a.latestReportedAt))
+  );
+
   const qualifiedTop10Count = issueCards.filter(
     (i) => i.qualifiesForTop10
   ).length;
 
   const summaryPayload = {
-    version: '1.1.0',
+    version: '1.2.0',
     generatedAt: new Date().toISOString(),
     retentionPolicy: {
       retentionDays,
@@ -968,12 +1195,13 @@ export async function runIssueProcessorAndPurge() {
       purgedBytesInLastRun: purgedBytes,
     },
     storageSummary: checkpointState.storageSummary,
-    totalScriptsAnalyzed: allItems.length,
+    totalScriptsAnalyzed: articleRecords.length,
     totalIssuesCount: issueCards.length,
     qualifiedTop10Count: Math.min(10, qualifiedTop10Count),
     publicSearchTrends: publicTrends,
     recommendedKeywords,
     issues: issueCards,
+    articleRecords,
   };
 
   fs.mkdirSync(path.dirname(ISSUES_SUMMARY_PATH), { recursive: true });

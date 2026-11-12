@@ -14,6 +14,7 @@ import type {
   DbStatsTab,
   IssueCard,
   IssueFilterState,
+  IssueSummaryTab,
   MainMenuView,
   MediaAnalysisTab,
 } from '../types/issues';
@@ -22,6 +23,7 @@ import styles from './HeaderBar.module.css';
 interface HeaderBarProps {
   activeMenu: MainMenuView;
   mediaTab: MediaAnalysisTab;
+  issueSummaryTab: IssueSummaryTab;
   dbTab: DbStatsTab;
   annualTab: AnnualIssuesTab;
   selectedTop10Issue: IssueCard | null;
@@ -31,6 +33,7 @@ interface HeaderBarProps {
   annualColumns: AnnualTableColumnVisibility;
   onToggleSidebar: () => void;
   onChangeMediaTab: (tab: MediaAnalysisTab) => void;
+  onChangeIssueSummaryTab: (tab: IssueSummaryTab) => void;
   onChangeDbTab: (tab: DbStatsTab) => void;
   onChangeAnnualTab: (tab: AnnualIssuesTab) => void;
   onUpdateFilter: <K extends keyof IssueFilterState>(
@@ -41,6 +44,16 @@ interface HeaderBarProps {
   onChangeDbColumns: (next: DbChannelColumnVisibility) => void;
   onChangeAnnualColumns: (next: AnnualTableColumnVisibility) => void;
 }
+
+const ISSUE_SUMMARY_TABS: Array<{ key: IssueSummaryTab; label: string }> = [
+  { key: 'TODAY', label: '오늘' },
+  { key: 'THIS_WEEK', label: '이번주' },
+  { key: 'THIS_MONTH', label: '이번달' },
+  { key: 'YESTERDAY', label: '어제' },
+  { key: 'LAST_WEEK', label: '저번주' },
+  { key: 'LAST_MONTH', label: '저번달' },
+  { key: 'SEARCH', label: '검색' },
+];
 
 const MENU_TITLES: Record<MainMenuView, string> = {
   MEDIA_ANALYSIS: '언론사 분석',
@@ -84,6 +97,7 @@ const ANNUAL_COLUMN_OPTIONS: Array<{
 export const HeaderBar: React.FC<HeaderBarProps> = ({
   activeMenu,
   mediaTab,
+  issueSummaryTab,
   dbTab,
   annualTab,
   selectedTop10Issue,
@@ -93,6 +107,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
   annualColumns,
   onToggleSidebar,
   onChangeMediaTab,
+  onChangeIssueSummaryTab,
   onChangeDbTab,
   onChangeAnnualTab,
   onUpdateFilter,
@@ -118,7 +133,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         block: 'nearest',
       });
     }
-  }, [activeMenu, mediaTab, dbTab, annualTab, selectedTop10Issue]);
+  }, [activeMenu, mediaTab, issueSummaryTab, dbTab, annualTab, selectedTop10Issue]);
 
   const showColumnsBtn =
     (activeMenu === 'DB_STATS' && dbTab === 'CHANNEL_INFO') ||
@@ -131,6 +146,8 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
     Boolean(filters.searchQuery.trim()) ||
     Boolean(filters.selectedKeyword) ||
     filters.mediaFilter !== 'ALL' ||
+    filters.mediaTypes.length < 2 ||
+    !filters.shortNameView ||
     filters.minMentionCount > 1;
 
   const pageTitle =
@@ -193,16 +210,21 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             </>
           )}
 
-          {activeMenu === 'ISSUE_SUMMARY' && (
-            <button
-              type="button"
-              role="tab"
-              aria-selected={true}
-              className={`${styles.pageTabBtn} ${styles.pageTabBtnActive}`}
-            >
-              이슈 요약
-            </button>
-          )}
+          {activeMenu === 'ISSUE_SUMMARY' &&
+            ISSUE_SUMMARY_TABS.map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                role="tab"
+                aria-selected={issueSummaryTab === t.key}
+                className={`${styles.pageTabBtn} ${
+                  issueSummaryTab === t.key ? styles.pageTabBtnActive : ''
+                }`}
+                onClick={() => onChangeIssueSummaryTab(t.key)}
+              >
+                {t.label}
+              </button>
+            ))}
 
           {activeMenu === 'DB_STATS' && (
             <>
@@ -436,47 +458,76 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                 <div className={styles.controlsLine}>
                   {(
                     [
-                      { id: 'ALL', label: '전체 매체' },
-                      { id: 'CROSS_MEDIA', label: '신문+방송 교차보도' },
-                      { id: 'NEWSPAPER_ONLY', label: '일간지 포함' },
-                      { id: 'BROADCAST_ONLY', label: '방송사 포함' },
+                      { id: 'NEWSPAPER', label: '일간지' },
+                      { id: 'BROADCAST', label: '방송사' },
                     ] as const
-                  ).map((opt) => (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      className={`${styles.filterPillBtn} ${
-                        filters.mediaFilter === opt.id
-                          ? styles.filterPillBtnActive
-                          : ''
-                      }`}
-                      onClick={() => onUpdateFilter('mediaFilter', opt.id)}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
+                  ).map((opt) => {
+                    const checked = filters.mediaTypes.includes(opt.id);
+                    return (
+                      <label
+                        key={opt.id}
+                        className={`${styles.checkLabel} ${
+                          checked ? styles.checkLabelChecked : ''
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(e) => {
+                            const next = e.target.checked
+                              ? Array.from(
+                                  new Set([...filters.mediaTypes, opt.id])
+                                )
+                              : filters.mediaTypes.filter((t) => t !== opt.id);
+                            onUpdateFilter('mediaTypes', next);
+                          }}
+                        />
+                        <span>{opt.label}</span>
+                      </label>
+                    );
+                  })}
+
+                  <label
+                    className={`${styles.checkLabel} ${
+                      filters.shortNameView ? styles.checkLabelChecked : ''
+                    }`}
+                    style={{ marginLeft: '0.4rem' }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={filters.shortNameView}
+                      onChange={(e) =>
+                        onUpdateFilter('shortNameView', e.target.checked)
+                      }
+                    />
+                    <span>단축보기</span>
+                  </label>
                 </div>
               </div>
 
-              <div className={styles.topicRow}>
-                <span className={styles.topicLabel}>보도 빈도</span>
-                <div className={styles.controlsLine}>
-                  {[1, 3, 5, 10].map((minCnt) => (
-                    <button
-                      key={minCnt}
-                      type="button"
-                      className={`${styles.filterPillBtn} ${
-                        filters.minMentionCount === minCnt
-                          ? styles.filterPillBtnActive
-                          : ''
-                      }`}
-                      onClick={() => onUpdateFilter('minMentionCount', minCnt)}
-                    >
-                      {minCnt === 1 ? '전체 이슈' : `${minCnt}건 이상 보도`}
-                    </button>
-                  ))}
+              {activeMenu !== 'DB_STATS' && (
+                <div className={styles.topicRow}>
+                  <span className={styles.topicLabel}>보도 빈도</span>
+                  <div className={styles.controlsLine}>
+                    {[1, 3, 5, 10].map((minCnt) => (
+                      <button
+                        key={minCnt}
+                        type="button"
+                        className={`${styles.filterPillBtn} ${
+                          filters.minMentionCount === minCnt
+                            ? styles.filterPillBtnActive
+                            : ''
+                        }`}
+                        onClick={() =>
+                          onUpdateFilter('minMentionCount', minCnt)
+                        }
+                      >
+                        {minCnt === 1 ? '전체 이슈' : `${minCnt}건 이상 보도`}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className={styles.topicRow}>
                 <span className={styles.topicLabel}>세부 검색</span>

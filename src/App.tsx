@@ -11,6 +11,7 @@ import {
   Info,
   Newspaper,
   RotateCcw,
+  Search,
   Settings,
   Tag,
   Tv,
@@ -27,9 +28,11 @@ import type {
   IssueCard,
   IssueFilterState,
   IssuesSummaryPayload,
+  IssueSummaryTab,
   MainMenuView,
   MediaAnalysisTab,
   ParserAnalysisReport,
+  RecommendedKeyword,
 } from './types/issues';
 import {
   getMediaAlias,
@@ -47,9 +50,105 @@ const DEFAULT_FILTERS: IssueFilterState = {
   searchQuery: '',
   selectedKeyword: null,
   mediaFilter: 'ALL',
+  mediaTypes: ['NEWSPAPER', 'BROADCAST'],
+  shortNameView: true,
   selectedChannelId: 'ALL',
   minMentionCount: 1,
 };
+
+const ALL_CHANNEL_IDS = [
+  'press-chosun',
+  'press-joongang',
+  'press-donga',
+  'press-hani',
+  'press-khan',
+  'press-hankook',
+  'press-seoul',
+  'press-kmib',
+  'press-segye',
+  'press-munhwa',
+  'yt-kbs',
+  'yt-mbc',
+  'yt-sbs',
+  'yt-jtbc',
+  'yt-tvchosun',
+  'yt-channela',
+  'yt-mbn',
+  'yt-ytn',
+  'yt-yonhaptv',
+];
+
+const QUICK_CHANNEL_GROUPS: Array<{
+  id: string;
+  label: string;
+  channelIds: string[];
+}> = [
+  { id: 'ALL', label: '전체', channelIds: ALL_CHANNEL_IDS },
+  {
+    id: 'NEWSPAPER_ALL',
+    label: '일간지 전체',
+    channelIds: ALL_CHANNEL_IDS.filter((id) => id.startsWith('press-')),
+  },
+  {
+    id: 'BROADCAST_ALL',
+    label: '방송사 전체',
+    channelIds: ALL_CHANNEL_IDS.filter((id) => id.startsWith('yt-')),
+  },
+  {
+    id: 'BROADCAST_3',
+    label: '방송3사',
+    channelIds: ['yt-kbs', 'yt-mbc', 'yt-sbs'],
+  },
+  {
+    id: 'JONGPYEON',
+    label: '종편',
+    channelIds: ['yt-jtbc', 'yt-tvchosun', 'yt-channela', 'yt-mbn'],
+  },
+  {
+    id: 'NEWS_CH',
+    label: '보도전문',
+    channelIds: ['yt-ytn', 'yt-yonhaptv'],
+  },
+  {
+    id: 'BIG3_PRESS',
+    label: '조중동',
+    channelIds: ['press-chosun', 'press-joongang', 'press-donga'],
+  },
+];
+
+const DB_CHART_PERIOD_TABS: Array<{ key: IssueSummaryTab; label: string }> = [
+  { key: 'TODAY', label: '오늘' },
+  { key: 'YESTERDAY', label: '어제' },
+  { key: 'THIS_WEEK', label: '이번주' },
+  { key: 'LAST_WEEK', label: '저번주' },
+  { key: 'THIS_MONTH', label: '이번달' },
+  { key: 'LAST_MONTH', label: '저번달' },
+];
+
+function resolveNewspaperDomSymbols(selectors: string[] = []): string {
+  const symbols: string[] = [];
+  for (const s of selectors) {
+    if (s.includes('article:published_time')) symbols.push('ㄱ');
+    else if (s.includes('application/ld+json')) symbols.push('ㄴ');
+    else if (s === '<article>') symbols.push('ㄷ');
+    else if (s.includes('#article-body')) symbols.push('ㄹ');
+    else if (s.includes('.article_body')) symbols.push('ㅁ');
+  }
+  return symbols.length > 0 ? symbols.join(' + ') : '-';
+}
+
+function resolveNewspaperStrategyFormula(
+  hasWorkingRss: boolean,
+  contentLevel?: string
+): string {
+  if (hasWorkingRss && contentLevel === 'FULL_TEXT') {
+    return 'A + C';
+  }
+  if (hasWorkingRss) {
+    return 'B + D';
+  }
+  return 'C + D';
+}
 
 /**
  * 3번 요구사항 기본값:
@@ -166,11 +265,186 @@ function resolveTableRemark(metrics?: ImpactMetrics): {
   return { remark: '', badgeClass: '' };
 }
 
+function getKstTodayDateStr(): string {
+  const kstMs = Date.now() + 9 * 3600 * 1000;
+  const d = new Date(kstMs);
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function addDaysToYmd(ymd: string, deltaDays: number): string {
+  const [y, m, d] = ymd.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d) + deltaDays * 86400 * 1000);
+  const yy = dt.getUTCFullYear();
+  const mm = String(dt.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(dt.getUTCDate()).padStart(2, '0');
+  return `${yy}-${mm}-${dd}`;
+}
+
+function resolveIssuePeriodBounds(
+  tab: IssueSummaryTab,
+  baseDateStr: string
+): { label: string; from: string; to: string } {
+  const [y, m, d] = baseDateStr.split('-').map(Number);
+  const baseUtc = new Date(Date.UTC(y, m - 1, d));
+  const dayOfWeekMonStart = (baseUtc.getUTCDay() + 6) % 7;
+  const thisWeekMonday = addDaysToYmd(baseDateStr, -dayOfWeekMonStart);
+  const thisWeekSunday = addDaysToYmd(thisWeekMonday, 6);
+
+  const lastWeekMonday = addDaysToYmd(thisWeekMonday, -7);
+  const lastWeekSunday = addDaysToYmd(thisWeekMonday, -1);
+
+  const thisMonthStart = `${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}-01`;
+  const thisMonthLastDay = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const thisMonthEnd = `${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}-${String(thisMonthLastDay).padStart(2, '0')}`;
+
+  const prevMonthDate = new Date(Date.UTC(y, m - 1, 0));
+  const prevY = prevMonthDate.getUTCFullYear();
+  const prevM = prevMonthDate.getUTCMonth() + 1;
+  const prevLastDay = prevMonthDate.getUTCDate();
+  const lastMonthStart = `${String(prevY).padStart(4, '0')}-${String(prevM).padStart(2, '0')}-01`;
+  const lastMonthEnd = `${String(prevY).padStart(4, '0')}-${String(prevM).padStart(2, '0')}-${String(prevLastDay).padStart(2, '0')}`;
+
+  const yesterdayStr = addDaysToYmd(baseDateStr, -1);
+
+  switch (tab) {
+    case 'TODAY':
+      return { label: '오늘', from: baseDateStr, to: baseDateStr };
+    case 'THIS_WEEK':
+      return { label: '이번주', from: thisWeekMonday, to: thisWeekSunday };
+    case 'THIS_MONTH':
+      return { label: '이번달', from: thisMonthStart, to: thisMonthEnd };
+    case 'YESTERDAY':
+      return { label: '어제', from: yesterdayStr, to: yesterdayStr };
+    case 'LAST_WEEK':
+      return { label: '저번주', from: lastWeekMonday, to: lastWeekSunday };
+    case 'LAST_MONTH':
+      return { label: '저번달', from: lastMonthStart, to: lastMonthEnd };
+    case 'SEARCH':
+      return { label: '검색', from: '2025-01-01', to: baseDateStr };
+  }
+}
+
+/**
+ * 날짜가 달라도 비슷한 주제로 이어진 이슈를 하나의 이슈로 통합해 보여주므로,
+ * 최초 보도일~최근(추가) 보도일 범위가 조회 기간과 겹치거나 해당 기간에 보도된 기사가 있으면 매칭 처리
+ */
+function doesIssueMatchPeriod(
+  issue: IssueCard,
+  from: string,
+  to: string
+): boolean {
+  const firstDate = (issue.firstReportedAt || '').slice(0, 10);
+  const latestDate = (
+    issue.latestReportedAt ||
+    issue.firstReportedAt ||
+    ''
+  ).slice(0, 10);
+  if (!firstDate) return false;
+  if (firstDate <= to && latestDate >= from) {
+    return true;
+  }
+  return issue.facts.some((f) =>
+    f.citations.some((c) => {
+      const cDate = (c.publishedAt || '').slice(0, 10);
+      return Boolean(cDate && cDate >= from && cDate <= to);
+    })
+  );
+}
+
+/**
+ * 주간/월간 등 다중 일자 탭 조회 시 여러 날에 걸쳐 보도된 동일 사건 이슈 카드를 하나로 병합
+ */
+function mergeSameEventIssuesForPeriod(issues: IssueCard[]): IssueCard[] {
+  const merged: IssueCard[] = [];
+
+  for (const item of issues) {
+    const itemTokens = new Set(
+      `${item.eventTitle || ''} ${item.representativeKeywords.slice(0, 2).join(' ')}`
+        .split(/\s+/)
+        .map((w) => w.trim())
+        .filter((w) => w.length >= 2)
+    );
+
+    const existing = merged.find((m) => {
+      const mTokens = `${m.eventTitle || ''} ${m.representativeKeywords.slice(0, 2).join(' ')}`
+        .split(/\s+/)
+        .map((w) => w.trim())
+        .filter((w) => w.length >= 2);
+      let shared = 0;
+      for (const tk of mTokens) {
+        if (itemTokens.has(tk)) shared += 1;
+      }
+      return shared >= 2;
+    });
+
+    if (!existing) {
+      merged.push({
+        ...item,
+        representativeKeywords: [...item.representativeKeywords],
+        mentionStats: {
+          ...item.mentionStats,
+          byChannel: { ...item.mentionStats.byChannel },
+        },
+        facts: [...item.facts],
+      });
+    } else {
+      existing.mentionStats.totalCount += item.mentionStats.totalCount;
+      existing.mentionStats.newspaperCount += item.mentionStats.newspaperCount;
+      existing.mentionStats.broadcastCount += item.mentionStats.broadcastCount;
+      for (const [ch, cnt] of Object.entries(item.mentionStats.byChannel)) {
+        existing.mentionStats.byChannel[ch] =
+          (existing.mentionStats.byChannel[ch] || 0) + cnt;
+      }
+      existing.mentionStats.uniqueChannelsCount = Object.keys(
+        existing.mentionStats.byChannel
+      ).length;
+
+      if (item.firstReportedAt < existing.firstReportedAt) {
+        existing.firstReportedAt = item.firstReportedAt;
+        existing.firstReportedChannel = item.firstReportedChannel;
+        existing.firstReportedUrl = item.firstReportedUrl;
+      }
+      if (item.latestReportedAt > existing.latestReportedAt) {
+        existing.latestReportedAt = item.latestReportedAt;
+      }
+
+      for (const kw of item.representativeKeywords) {
+        if (
+          existing.representativeKeywords.length < 6 &&
+          !existing.representativeKeywords.includes(kw)
+        ) {
+          existing.representativeKeywords.push(kw);
+        }
+      }
+
+      for (const f of item.facts) {
+        if (
+          existing.facts.length < 8 &&
+          !existing.facts.some((ef) => ef.sentence === f.sentence)
+        ) {
+          existing.facts.push(f);
+        }
+      }
+    }
+  }
+
+  return merged.sort(
+    (a, b) =>
+      b.mentionStats.totalCount - a.mentionStats.totalCount ||
+      b.latestReportedAt.localeCompare(a.latestReportedAt)
+  );
+}
+
 export function App() {
   const [activeMenu, setActiveMenu] = useState<MainMenuView>('ISSUE_SUMMARY');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   const [mediaTab, setMediaTab] = useState<MediaAnalysisTab>('NEWSPAPER');
+  const [issueSummaryTab, setIssueSummaryTab] =
+    useState<IssueSummaryTab>('TODAY');
   const [dbTab, setDbTab] = useState<DbStatsTab>('CHANNEL_INFO');
   const [annualTab, setAnnualTab] = useState<AnnualIssuesTab>('TABLE');
 
@@ -195,6 +469,12 @@ export function App() {
     string | null
   >(null);
 
+  // 이슈 요약 - '검색' 탭 전용 검색어 및 선택된 후보 이슈 ID
+  const [searchTabQuery, setSearchTabQuery] = useState<string>('');
+  const [selectedSearchCandidateId, setSelectedSearchCandidateId] = useState<
+    string | null
+  >(null);
+
   // 언론사 별명(Alias) 상태 관리 (설정 화면에서 실시간 변경 및 localStorage 영구 저장)
   const [mediaAliases, setMediaAliases] = useState<Record<string, string>>(() =>
     loadMediaAliases()
@@ -205,6 +485,18 @@ export function App() {
   const [engineModeSetting, setEngineModeSetting] = useState<
     'LOCAL_FREE' | 'HYBRID_LLM'
   >('LOCAL_FREE');
+
+  // 수집현황(1번탭) 최상위 세로 막대 그래프(언론사별 기사 수) 전용 필터 상태
+  const [chartSelectedChannels, setChartSelectedChannels] =
+    useState<string[]>(ALL_CHANNEL_IDS);
+  const [chartPeriodTab, setChartPeriodTab] =
+    useState<IssueSummaryTab>('THIS_MONTH');
+  const [chartSearchInTitle, setChartSearchInTitle] = useState<boolean>(true);
+  const [chartSearchInBody, setChartSearchInBody] = useState<boolean>(true);
+  const [chartSearchText, setChartSearchText] = useState<string>('');
+  const [chartSmartMode, setChartSmartMode] = useState<boolean>(false);
+  const [chartSelectedIssueUuid, setChartSelectedIssueUuid] =
+    useState<string>('');
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL || '/';
@@ -225,6 +517,9 @@ export function App() {
         setParserReport(prs);
         if (iss?.issues?.length > 0) {
           setSelectedTop10IssueId(iss.issues[0].issueId);
+          setChartSelectedIssueUuid(
+            iss.issues[0].uuid || iss.issues[0].issueId
+          );
         }
         if (iss?.retentionPolicy?.retentionDays) {
           setRetentionDaysSetting(iss.retentionPolicy.retentionDays);
@@ -272,14 +567,129 @@ export function App() {
     setFilters(DEFAULT_FILTERS);
   };
 
-  // Top10 자격(구체적 사건성 + 복수 매체 보도)을 충족한 이슈만 선별
+  // 기준 오늘 날짜 산출 (오늘 수집분이 아직 없는 새벽 시간대에는 최신 수집 완료일 기준 폴백)
+  const referenceTodayStr = useMemo<string>(() => {
+    const todayKst = getKstTodayDateStr();
+    if (!issuesData?.issues || issuesData.issues.length === 0) {
+      return todayKst;
+    }
+    const hasTodayIssue = issuesData.issues.some((it) =>
+      doesIssueMatchPeriod(it, todayKst, todayKst)
+    );
+    if (hasTodayIssue) return todayKst;
+    return issuesData.storageSummary?.newestRawDate || todayKst;
+  }, [issuesData]);
+
+  const currentPeriodBounds = useMemo(
+    () => resolveIssuePeriodBounds(issueSummaryTab, referenceTodayStr),
+    [issueSummaryTab, referenceTodayStr]
+  );
+
+  // 날짜가 달라도 유사한 주제는 하나의 통합 이슈로 먼저 병합
+  const unifiedAllIssues = useMemo<IssueCard[]>(() => {
+    if (!issuesData?.issues) return [];
+    return mergeSameEventIssuesForPeriod(issuesData.issues);
+  }, [issuesData]);
+
+  // 선택된 이슈 요약 기간 탭(오늘/이번주/이번달/어제/저번주/저번달)에 해당하는 검증 이슈 목록
+  const periodVerifiedIssues = useMemo<IssueCard[]>(() => {
+    return unifiedAllIssues.filter((issue) => {
+      if (
+        issue.mentionStats.uniqueChannelsCount < 2 ||
+        issue.mentionStats.totalCount < 3
+      ) {
+        return false;
+      }
+      return doesIssueMatchPeriod(
+        issue,
+        currentPeriodBounds.from,
+        currentPeriodBounds.to
+      );
+    });
+  }, [unifiedAllIssues, currentPeriodBounds]);
+
+  // 이슈 요약 '검색' 탭 전용: 검색어와 매칭된 후보 이슈 목록 산출
+  const activeSearchQuery = (
+    searchTabQuery.trim() || filters.searchQuery.trim()
+  ).toLowerCase();
+
+  const searchCandidateIssues = useMemo<IssueCard[]>(() => {
+    if (unifiedAllIssues.length === 0) return [];
+    if (!activeSearchQuery) {
+      return unifiedAllIssues;
+    }
+
+    const qTokens = activeSearchQuery
+      .split(/\s+/)
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const records = issuesData?.articleRecords || [];
+
+    return unifiedAllIssues.filter((issue) => {
+      const issueUuid = issue.uuid || issue.issueId;
+      const searchableText = [
+        issue.eventTitle || '',
+        issue.title || '',
+        ...issue.representativeKeywords,
+        ...issue.facts.map((f) => f.sentence),
+        ...issue.facts.flatMap((f) =>
+          f.citations.map(
+            (c) =>
+              `${c.articleTitle || ''} ${c.channelName} ${getMediaAlias(
+                c.channelName,
+                mediaAliases
+              )}`
+          )
+        ),
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      if (qTokens.every((tk) => searchableText.includes(tk))) {
+        return true;
+      }
+
+      // 연관 기사(articleRecords) 제목·본문 매칭
+      return records.some(
+        (rec) =>
+          rec.u === issueUuid &&
+          qTokens.every(
+            (tk) =>
+              rec.t.toLowerCase().includes(tk) ||
+              rec.b.toLowerCase().includes(tk)
+          )
+      );
+    });
+  }, [unifiedAllIssues, activeSearchQuery, issuesData, mediaAliases]);
+
+  const selectedSearchCandidateIssue = useMemo<IssueCard | null>(() => {
+    if (searchCandidateIssues.length === 0) return null;
+    return (
+      searchCandidateIssues.find(
+        (it) => it.issueId === selectedSearchCandidateId
+      ) || searchCandidateIssues[0]
+    );
+  }, [searchCandidateIssues, selectedSearchCandidateId]);
+
+  // 이슈 요약 상단 비교 표에 표시할 기간별 상위 이슈 (최대 10개)
+  const periodSummaryTableIssues = useMemo<IssueCard[]>(() => {
+    return periodVerifiedIssues
+      .filter((it) => it.qualifiesForTop10 !== false)
+      .sort((a, b) => b.mentionStats.totalCount - a.mentionStats.totalCount)
+      .slice(0, 10);
+  }, [periodVerifiedIssues]);
+
+  // Top10 자격(구체적 사건성 + 복수 매체 보도)을 충족한 이슈만 선별 (현재 선택된 기간 탭 우선 반영)
   const top10Issues = useMemo<IssueCard[]>(() => {
+    if (periodSummaryTableIssues.length > 0) {
+      return periodSummaryTableIssues;
+    }
     if (!issuesData?.issues) return [];
     return issuesData.issues
       .filter((it) => it.qualifiesForTop10 !== false)
       .sort((a, b) => b.mentionStats.totalCount - a.mentionStats.totalCount)
       .slice(0, 10);
-  }, [issuesData]);
+  }, [periodSummaryTableIssues, issuesData]);
 
   const selectedTop10Issue = useMemo<IssueCard | null>(() => {
     if (top10Issues.length === 0) return null;
@@ -297,15 +707,47 @@ export function App() {
     return idx >= 0 ? idx + 1 : 1;
   }, [top10Issues, selectedTop10Issue]);
 
+  // 선택된 기간 탭 내 이슈들의 추천 키워드 동적 산출
+  const periodRecommendedKeywords = useMemo<RecommendedKeyword[]>(() => {
+    const kwMap = new Map<
+      string,
+      { articleCount: number; channels: Set<string>; isCompound: boolean }
+    >();
+    for (const issue of periodVerifiedIssues) {
+      const chKeys = Object.keys(issue.mentionStats.byChannel || {});
+      for (const kw of issue.representativeKeywords.slice(0, 2)) {
+        const entry = kwMap.get(kw) || {
+          articleCount: 0,
+          channels: new Set<string>(),
+          isCompound: kw.includes(' '),
+        };
+        entry.articleCount += issue.mentionStats.totalCount;
+        for (const ch of chKeys) entry.channels.add(ch);
+        kwMap.set(kw, entry);
+      }
+    }
+    return Array.from(kwMap.entries())
+      .map(([keyword, info]) => ({
+        keyword,
+        isCompound: info.isCompound,
+        articleCount: info.articleCount,
+        channelCount: info.channels.size,
+        score: info.articleCount * 3 + info.channels.size * 5,
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 24);
+  }, [periodVerifiedIssues]);
+
   // 개별 기사는 이슈요약에 등장하지 않도록 복수 매체가 교차 보도한 검증된 이슈만 필터링
   const filteredIssues = useMemo(() => {
-    if (!issuesData?.issues) return [];
-    return issuesData.issues.filter((issue) => {
-      // 단일 매체/개별 기사는 이슈 요약에서 원천 제외
-      if (
-        issue.mentionStats.uniqueChannelsCount < 2 ||
-        issue.mentionStats.totalCount < 3
-      ) {
+    return periodVerifiedIssues.filter((issue) => {
+      if (filters.mediaTypes.length === 0) return false;
+      const hasNewspaper = filters.mediaTypes.includes('NEWSPAPER');
+      const hasBroadcast = filters.mediaTypes.includes('BROADCAST');
+      if (!hasNewspaper && issue.mentionStats.broadcastCount === 0) {
+        return false;
+      }
+      if (!hasBroadcast && issue.mentionStats.newspaperCount === 0) {
         return false;
       }
 
@@ -364,11 +806,24 @@ export function App() {
 
       return true;
     });
-  }, [issuesData, filters, mediaAliases]);
+  }, [periodVerifiedIssues, filters, mediaAliases]);
+
+  // 채널명 표기 헬퍼: 단축보기(shortNameView) 체크 시 단축 이름만, 해제 시 원래 채널명만 단독 표기
+  const formatChannelDisplayName = (canonicalName: string): string => {
+    if (filters.shortNameView) {
+      return getMediaAlias(canonicalName, mediaAliases);
+    }
+    return canonicalName;
+  };
 
   const checkpointChannels = useMemo(() => {
     if (!checkpointData?.channels) return [];
-    const list = Object.values(checkpointData.channels);
+    const list = Object.values(checkpointData.channels).filter((ch) => {
+      if (ch.mediaType === 'NEWSPAPER') {
+        return filters.mediaTypes.includes('NEWSPAPER');
+      }
+      return filters.mediaTypes.includes('BROADCAST');
+    });
     if (!filters.searchQuery.trim()) return list;
     const q = filters.searchQuery.trim().toLowerCase();
     return list.filter(
@@ -377,7 +832,119 @@ export function App() {
         getMediaAlias(ch.name, mediaAliases).toLowerCase().includes(q) ||
         ch.channelId.toLowerCase().includes(q)
     );
-  }, [checkpointData, filters.searchQuery, mediaAliases]);
+  }, [checkpointData, filters.mediaTypes, filters.searchQuery, mediaAliases]);
+
+  const chartPeriodBounds = useMemo(
+    () => resolveIssuePeriodBounds(chartPeriodTab, referenceTodayStr),
+    [chartPeriodTab, referenceTodayStr]
+  );
+
+  // Smart 옵션용: 현재 그래프 선택 기간(또는 전체)의 이슈 목록 (고유 UUID 보유)
+  const chartPeriodIssues = useMemo<IssueCard[]>(() => {
+    if (!issuesData?.issues) return [];
+    const inPeriod = issuesData.issues.filter(
+      (iss) =>
+        iss.mentionStats.uniqueChannelsCount >= 2 &&
+        iss.mentionStats.totalCount >= 3 &&
+        doesIssueMatchPeriod(iss, chartPeriodBounds.from, chartPeriodBounds.to)
+    );
+    return inPeriod.length > 0 ? inPeriod : issuesData.issues.slice(0, 30);
+  }, [issuesData, chartPeriodBounds]);
+
+  const activeSmartIssue = useMemo<IssueCard | null>(() => {
+    if (!chartSmartMode || chartPeriodIssues.length === 0) return null;
+    return (
+      chartPeriodIssues.find(
+        (iss) => (iss.uuid || iss.issueId) === chartSelectedIssueUuid
+      ) || chartPeriodIssues[0]
+    );
+  }, [chartSmartMode, chartPeriodIssues, chartSelectedIssueUuid]);
+
+  // 수집현황(1번탭) 최상위 세로 막대 그래프 데이터 산출
+  const channelArticleChartData = useMemo(() => {
+    const countsByChannel: Record<string, number> = {};
+    for (const id of ALL_CHANNEL_IDS) {
+      countsByChannel[id] = 0;
+    }
+
+    const q = chartSearchText.trim().toLowerCase();
+    const records = issuesData?.articleRecords || [];
+
+    if (chartSmartMode && activeSmartIssue) {
+      const targetUuid = activeSmartIssue.uuid || activeSmartIssue.issueId;
+      const matchedRecords = records.filter((rec) => {
+        if (rec.u !== targetUuid) return false;
+        if (!q) return true;
+        const inT = chartSearchInTitle && rec.t.toLowerCase().includes(q);
+        const inB = chartSearchInBody && rec.b.toLowerCase().includes(q);
+        return inT || inB;
+      });
+
+      if (matchedRecords.length > 0) {
+        for (const rec of matchedRecords) {
+          countsByChannel[rec.ch] = (countsByChannel[rec.ch] || 0) + 1;
+        }
+      } else {
+        for (const [chId, cnt] of Object.entries(
+          activeSmartIssue.mentionStats.byChannel || {}
+        )) {
+          countsByChannel[chId] = (countsByChannel[chId] || 0) + cnt;
+        }
+      }
+    } else {
+      for (const rec of records) {
+        if (
+          rec.dt < chartPeriodBounds.from ||
+          rec.dt > chartPeriodBounds.to
+        ) {
+          continue;
+        }
+        if (q) {
+          const inT = chartSearchInTitle && rec.t.toLowerCase().includes(q);
+          const inB = chartSearchInBody && rec.b.toLowerCase().includes(q);
+          if (!inT && !inB) continue;
+        }
+        countsByChannel[rec.ch] = (countsByChannel[rec.ch] || 0) + 1;
+      }
+    }
+
+    const allChList = checkpointData?.channels
+      ? Object.values(checkpointData.channels)
+      : [];
+
+    const bars = allChList
+      .filter((ch) => {
+        const typeAllowed =
+          ch.mediaType === 'NEWSPAPER'
+            ? filters.mediaTypes.includes('NEWSPAPER')
+            : filters.mediaTypes.includes('BROADCAST');
+        return typeAllowed && chartSelectedChannels.includes(ch.channelId);
+      })
+      .map((ch) => ({
+        channelId: ch.channelId,
+        name: ch.name,
+        shortName: getMediaAlias(ch.name, mediaAliases),
+        mediaType: ch.mediaType,
+        count: countsByChannel[ch.channelId] || 0,
+      }));
+
+    const maxCount = Math.max(1, ...bars.map((b) => b.count));
+    const totalCount = bars.reduce((acc, b) => acc + b.count, 0);
+
+    return { bars, maxCount, totalCount };
+  }, [
+    issuesData,
+    checkpointData,
+    chartSmartMode,
+    activeSmartIssue,
+    chartPeriodBounds,
+    chartSearchText,
+    chartSearchInTitle,
+    chartSearchInBody,
+    chartSelectedChannels,
+    filters.mediaTypes,
+    mediaAliases,
+  ]);
 
   /**
    * 하나의 점수 바(Unified Single Score Bar)에서 언론 보도 강도와 대중 소비·검색 점수 게이지를 동시에 표시
@@ -420,7 +987,10 @@ export function App() {
    * 국가안보와 회사 기밀 침해 가능성까지 제기되면서 엔비디아는 독립 조사에 착수했는데요 {JTBC}.
    * 미국 국가 안보 우려와 기밀 유출 가능성을 규명하기 위한 독립 이사 위원회의 조사 내용 및 의회의 압박 등 파장을 짚어봅니다 {YTN} {연합}.
    */
-  const renderInlineFactSentence = (fact: FactItem) => {
+  const renderInlineFactSentence = (
+    fact: FactItem,
+    dateMarker?: string | null
+  ) => {
     const firstCit = fact.citations[0];
     const followUps = fact.citations.slice(1);
     const cleanSent = fact.sentence.replace(/[.?!]+$/, '').trim();
@@ -430,6 +1000,9 @@ export function App() {
 
     return (
       <span key={fact.factId} className={styles.inlineFactSegment}>
+        {dateMarker && (
+          <span className={styles.inlineFollowUpBadge}>{dateMarker}</span>
+        )}
         <span className={styles.inlineSentenceText}>{cleanSent}</span>{' '}
         {firstCit && (
           <a
@@ -439,10 +1012,10 @@ export function App() {
             className={styles.inlineBraceTagFirst}
             title={`최초 보도: ${firstCit.channelName} (${firstCit.publishedAt})`}
           >
-            {`{${firstAlias}}`}
+            {firstAlias}
           </a>
         )}
-        {/* 후속 보도가 정확히 1개인 경우: {외 1} 대신 해당 매체 별명 {연합} 등을 직접 표기 */}
+        {/* 후속 보도가 정확히 1개인 경우: 외 1 대신 해당 매체 별명 연합 등을 직접 표기 */}
         {followUps.length === 1 && (
           <>
             {' '}
@@ -453,17 +1026,17 @@ export function App() {
               className={styles.inlineBraceTagSecond}
               title={`후속 보도: ${followUps[0].channelName} (${followUps[0].publishedAt})`}
             >
-              {`{${getMediaAlias(followUps[0].channelName, mediaAliases)}}`}
+              {getMediaAlias(followUps[0].channelName, mediaAliases)}
             </a>
           </>
         )}
-        {/* 후속 보도가 2개 이상인 경우: {외 N}으로 표시하고 마우스오버 시 상세 매체·시각 팝오버 노출 */}
+        {/* 후속 보도가 2개 이상인 경우: 외 N으로 표시하고 마우스오버 시 상세 매체·시각 팝오버 노출 */}
         {followUps.length >= 2 && (
           <>
             {' '}
             <span className={styles.followUpHoverWrap}>
               <span className={styles.inlineBraceTagMore}>
-                {`{외 ${followUps.length}}`}
+                {`외 ${followUps.length}`}
               </span>
               <span className={styles.followUpPopover}>
                 <span className={styles.followUpPopoverTitle}>
@@ -478,7 +1051,7 @@ export function App() {
                     className={styles.followUpLinkItem}
                   >
                     <span>
-                      {`{${getMediaAlias(fc.channelName, mediaAliases)}}`}{' '}
+                      {getMediaAlias(fc.channelName, mediaAliases)}{' '}
                       <small style={{ color: '#94a3b8' }}>
                         ({fc.channelName})
                       </small>
@@ -584,6 +1157,16 @@ export function App() {
       issue.firstReportedChannel,
       mediaAliases
     );
+    const firstDateStr = (issue.firstReportedAt || '').slice(0, 10);
+    const latestDateStr = (issue.latestReportedAt || '').slice(0, 10);
+    const hasDifferentDayAdditionalReport = Boolean(
+      firstDateStr &&
+        latestDateStr &&
+        latestDateStr > firstDateStr &&
+        issue.mentionStats.totalCount > 1
+    );
+
+    let lastShownDate = firstDateStr;
 
     return (
       <article key={issue.issueId} className={styles.issueCard}>
@@ -593,9 +1176,14 @@ export function App() {
             <span className={styles.evalPrefixLabel}>평가</span>
             <span className={evalInfo.badgeClass}>{evalInfo.label}</span>
             <span className={styles.firstReportUpdatedChip}>
-              최초 보도: {`{${firstChannelAlias}}`} (
+              최초 보도: {firstChannelAlias} (
               {formatShortTimestamp(issue.firstReportedAt)})
             </span>
+            {hasDifferentDayAdditionalReport && (
+              <span className={styles.additionalReportChip}>
+                + {latestDateStr.slice(5).replace('-', '/')}
+              </span>
+            )}
           </div>
 
           <div className={styles.evalRightGaugeGroup}>
@@ -632,10 +1220,27 @@ export function App() {
           </div>
         </div>
 
-        {/* 요약된 이슈 본문 문단 ({별명} {외 N} / 1개인 경우 {별명2}) */}
+        {/* 요약된 이슈 본문 문단 (별명 외 N / 1개인 경우 별명2, 다른 날 추가 보도 시 + MM/DD 1회 표기) */}
         <div className={styles.narrativeSummaryBox}>
           <p className={styles.narrativeParagraph}>
-            {issue.facts.map((fact) => renderInlineFactSentence(fact))}
+            {issue.facts.map((fact) => {
+              const factDate = (
+                fact.firstMentionedAt ||
+                fact.addedAt ||
+                ''
+              ).slice(0, 10);
+              let dateMarker: string | null = null;
+              if (
+                factDate &&
+                firstDateStr &&
+                factDate !== firstDateStr &&
+                factDate !== lastShownDate
+              ) {
+                dateMarker = `+ ${factDate.slice(5).replace('-', '/')}`;
+                lastShownDate = factDate;
+              }
+              return renderInlineFactSentence(fact, dateMarker);
+            })}
           </p>
         </div>
       </article>
@@ -647,6 +1252,7 @@ export function App() {
       <HeaderBar
         activeMenu={activeMenu}
         mediaTab={mediaTab}
+        issueSummaryTab={issueSummaryTab}
         dbTab={dbTab}
         annualTab={annualTab}
         selectedTop10Issue={selectedTop10Issue}
@@ -656,6 +1262,10 @@ export function App() {
         annualColumns={annualColumns}
         onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
         onChangeMediaTab={setMediaTab}
+        onChangeIssueSummaryTab={(nextTab) => {
+          setIssueSummaryTab(nextTab);
+          handleUpdateFilter('selectedKeyword', null);
+        }}
         onChangeDbTab={setDbTab}
         onChangeAnnualTab={setAnnualTab}
         onUpdateFilter={handleUpdateFilter}
@@ -688,203 +1298,417 @@ export function App() {
           />
         )}
 
-        {/* 2. 이슈 요약 (기본 화면: 상단 [순위 | 주제 | 대중 | 언론 | 비고] 비교 표 + 사건 키워드 + 요약 문단 카드, 개별 기사 미노출) */}
+        {/* 2. 이슈 요약 (기본 화면: 상단 [순위 | 주제 | 대중 | 언론 | 비고] 비교 표 + 사건 키워드 + 요약 문단 카드, 또는 '검색' 탭) */}
         {!loading && activeMenu === 'ISSUE_SUMMARY' && (
           <>
-            {/* 상단 비교 표: 순위, 주제, 대중(오른쪽 정렬 왼쪽 성장), 언론(왼쪽 정렬 오른쪽 성장), 비고(언론 과대 / 언론 과소만 체크) */}
-            <section className={styles.impactChartCard}>
-              <div className={styles.impactChartHeader}>
-                <div>
-                  <h2 className={styles.sectionTitle}>
-                    <BarChart2 size={19} color="#2563eb" />
-                    <span>이슈 요약 — 대중 vs 언론 보도 강도 비교 표</span>
-                  </h2>
-                </div>
-              </div>
+            {issueSummaryTab === 'SEARCH' ? (
+              <>
+                {/* 검색 탭 상단: 검색어 입력 및 후보 이슈 목록 선택 패널 */}
+                <section className={styles.sectionCard}>
+                  <div className={styles.searchTabHeaderRow}>
+                    <h2 className={styles.sectionTitle}>
+                      <Search size={19} color="#2563eb" />
+                      <span>
+                        이슈 검색 — 검색된 후보 이슈 선택 및 통합 보도(추가 보도 포함) 조회
+                      </span>
+                    </h2>
+                    <span className={styles.rangePill}>
+                      후보 이슈 {searchCandidateIssues.length}건
+                    </span>
+                  </div>
 
-              <div className={styles.summaryTableWrap}>
-                <table className={styles.summaryButterflyTable}>
-                  <thead>
-                    <tr>
-                      <th className={styles.colRank}>순위</th>
-                      <th className={styles.colTopic}>주제</th>
-                      <th className={styles.colPublic}>대중</th>
-                      <th className={styles.colMedia}>언론</th>
-                      <th className={styles.colRemark}>비고</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {top10Issues.map((issue, idx) => {
-                      const isFirstRank = idx === 0;
-                      const pullScore =
-                        issue.impactMetrics?.publicPullScore ?? 35;
-                      const pushScore =
-                        issue.impactMetrics?.mediaPushScore ?? 50;
-                      const pullWidth = Math.max(
-                        4,
-                        Math.min(100, pullScore)
-                      );
-                      const pushWidth = Math.max(
-                        4,
-                        Math.min(100, pushScore)
-                      );
-                      const remarkInfo = resolveTableRemark(
-                        issue.impactMetrics
-                      );
-                      const labelText =
-                        issue.eventTitle ||
-                        issue.representativeKeywords[0] ||
-                        '주요 이슈';
+                  <div className={styles.searchTabInputRow}>
+                    <input
+                      type="search"
+                      className={styles.searchTabInputBox}
+                      placeholder="사건 키워드, 주제, 본문 문장, 언론사명을 입력하세요 (예: 젠슨 황, 트럼프, 연쇄 추돌, 종부세)..."
+                      value={searchTabQuery}
+                      onChange={(e) => {
+                        setSearchTabQuery(e.target.value);
+                        setSelectedSearchCandidateId(null);
+                      }}
+                    />
+                    {searchTabQuery && (
+                      <button
+                        type="button"
+                        className={styles.quickSelectBtn}
+                        onClick={() => {
+                          setSearchTabQuery('');
+                          setSelectedSearchCandidateId(null);
+                        }}
+                      >
+                        검색어 지우기
+                      </button>
+                    )}
+                  </div>
 
-                      return (
-                        <tr
-                          key={issue.issueId}
-                          className={styles.summaryTableRow}
-                          onClick={() => {
-                            setSelectedTop10IssueId(issue.issueId);
-                            setActiveMenu('TOP10');
-                          }}
-                          title="클릭 시 해당 Top10 이슈 상세 화면으로 이동"
-                        >
-                          {/* 순위: 숫자 텍스트로만 출력 */}
-                          <td className={styles.cellRankText}>{idx + 1}</td>
-
-                          {/* 주제 */}
-                          <td className={styles.cellTopicText}>{labelText}</td>
-
-                          {/* 대중: 중간 기준 오른쪽 정렬, 왼쪽으로 성장 (1위만 대중 텍스트+수치가 그래프와 겹쳐 표시) */}
-                          <td className={styles.cellButterflyPublic}>
-                            <div className={styles.butterflyTrackPublic}>
-                              <div
-                                className={styles.butterflyBarPublic}
-                                style={{ width: `${pullWidth}%` }}
-                              />
-                              {isFirstRank && (
-                                <span className={styles.butterflyOverlayPublic}>
-                                  대중 {pullScore}
+                  {/* 빠른 검색용 추천 키워드 */}
+                  {issuesData?.recommendedKeywords &&
+                    issuesData.recommendedKeywords.length > 0 && (
+                      <div className={styles.keywordCloud}>
+                        {issuesData.recommendedKeywords
+                          .slice(0, 14)
+                          .map((kw) => {
+                            const isSelected =
+                              searchTabQuery.trim() === kw.keyword;
+                            return (
+                              <button
+                                key={kw.keyword}
+                                type="button"
+                                className={`${styles.keywordPill} ${
+                                  kw.isCompound
+                                    ? styles.keywordPillCompound
+                                    : ''
+                                } ${
+                                  isSelected ? styles.keywordPillSelected : ''
+                                }`}
+                                onClick={() => {
+                                  setSearchTabQuery(
+                                    isSelected ? '' : kw.keyword
+                                  );
+                                  setSelectedSearchCandidateId(null);
+                                }}
+                              >
+                                <span>{kw.keyword}</span>
+                                <span className={styles.keywordCount}>
+                                  {kw.articleCount}건
                                 </span>
-                              )}
-                            </div>
-                          </td>
+                              </button>
+                            );
+                          })}
+                      </div>
+                    )}
 
-                          {/* 언론: 중간 기준 왼쪽 정렬, 오른쪽으로 성장 (1위만 언론 텍스트+수치가 그래프와 겹쳐 표시) */}
-                          <td className={styles.cellButterflyMedia}>
-                            <div className={styles.butterflyTrackMedia}>
-                              <div
-                                className={styles.butterflyBarMedia}
-                                style={{ width: `${pushWidth}%` }}
-                              />
-                              {isFirstRank && (
-                                <span className={styles.butterflyOverlayMedia}>
-                                  언론 {pushScore}
+                  {/* 후보 이슈 선택 목록 */}
+                  <div className={styles.candidateListSection}>
+                    <div className={styles.candidateListTitle}>
+                      후보 이슈 목록 (클릭하여 아래에 상세 이슈 및 추가 보도 출력)
+                    </div>
+
+                    {searchCandidateIssues.length === 0 ? (
+                      <div className={styles.emptyCandidateNotice}>
+                        입력하신 검색어(
+                        <strong>
+                          {searchTabQuery || filters.searchQuery}
+                        </strong>
+                        )와 일치하는 후보 이슈가 없습니다.
+                      </div>
+                    ) : (
+                      <div className={styles.candidateIssuesGrid}>
+                        {searchCandidateIssues.slice(0, 24).map((cand, idx) => {
+                          const isSelected =
+                            selectedSearchCandidateIssue?.issueId ===
+                            cand.issueId;
+                          const firstDay = (cand.firstReportedAt || '').slice(
+                            5,
+                            10
+                          );
+                          const latestDay = (
+                            cand.latestReportedAt ||
+                            cand.firstReportedAt ||
+                            ''
+                          ).slice(5, 10);
+                          const dateRangeLabel =
+                            firstDay === latestDay
+                              ? firstDay
+                              : `${firstDay} ~ ${latestDay} (추가보도 포함)`;
+
+                          return (
+                            <button
+                              key={cand.issueId}
+                              type="button"
+                              className={`${styles.candidateIssueBtn} ${
+                                isSelected
+                                  ? styles.candidateIssueBtnActive
+                                  : ''
+                              }`}
+                              onClick={() =>
+                                setSelectedSearchCandidateId(cand.issueId)
+                              }
+                            >
+                              <div className={styles.candidateBtnTopRow}>
+                                <span className={styles.candidateRankTag}>
+                                  후보 {idx + 1}
                                 </span>
-                              )}
-                            </div>
-                          </td>
+                                <span className={styles.candidateDateSpan}>
+                                  {dateRangeLabel}
+                                </span>
+                                <span className={styles.candidateCountSpan}>
+                                  총 {cand.mentionStats.totalCount}회 보도
+                                </span>
+                              </div>
+                              <div className={styles.candidateTitleText}>
+                                {cand.eventTitle ||
+                                  cand.representativeKeywords[0] ||
+                                  cand.title}
+                              </div>
+                              <div className={styles.candidateKwPreview}>
+                                {cand.representativeKeywords
+                                  .slice(0, 3)
+                                  .map((k) => `#${k}`)
+                                  .join(' · ')}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </section>
 
-                          {/* 비고: 언론 과대, 언론 과소만 체크 */}
-                          <td className={styles.cellRemarkText}>
-                            {remarkInfo.remark ? (
-                              <span className={remarkInfo.badgeClass}>
-                                {remarkInfo.remark}
-                              </span>
-                            ) : null}
-                          </td>
+                {/* 선택한 후보 이슈 상세 출력 (통합 이슈 카드 + 시간순 추가 보도 내역) */}
+                {selectedSearchCandidateIssue && (
+                  <>
+                    <section className={styles.issuesGrid}>
+                      {renderIssueSummaryCard(selectedSearchCandidateIssue)}
+                    </section>
+
+                    <section className={styles.sectionCard}>
+                      <h3 className={styles.sectionTitle}>
+                        <Clock size={18} color="#2563eb" />
+                        <span>
+                          선택된 이슈의 시간순 보도 및 추가 보도 내역 (총{' '}
+                          {selectedSearchCandidateIssue.facts.length}개 핵심 문장 ·{' '}
+                          {selectedSearchCandidateIssue.mentionStats.totalCount}건 기사 통합)
+                        </span>
+                      </h3>
+                      <div className={styles.factsList}>
+                        {selectedSearchCandidateIssue.facts.map((fact) =>
+                          renderTimelineFactItem(fact)
+                        )}
+                      </div>
+                    </section>
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                {/* 상단 비교 표: 순위, 주제, 대중(오른쪽 정렬 왼쪽 성장), 언론(왼쪽 정렬 오른쪽 성장), 비고(언론 과대 / 언론 과소만 체크) */}
+                <section className={styles.impactChartCard}>
+                  <div className={styles.impactChartHeader}>
+                    <div>
+                      <h2 className={styles.sectionTitle}>
+                        <BarChart2 size={19} color="#2563eb" />
+                        <span>
+                          이슈 요약 ({currentPeriodBounds.label} ·{' '}
+                          {currentPeriodBounds.from === currentPeriodBounds.to
+                            ? currentPeriodBounds.from
+                            : `${currentPeriodBounds.from} ~ ${currentPeriodBounds.to}`}
+                          ) — 대중 vs 언론 보도 강도 비교 표
+                        </span>
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div className={styles.summaryTableWrap}>
+                    <table className={styles.summaryButterflyTable}>
+                      <thead>
+                        <tr>
+                          <th className={styles.colRank}>순위</th>
+                          <th className={styles.colTopic}>주제</th>
+                          <th className={styles.colPublic}>대중</th>
+                          <th className={styles.colMedia}>언론</th>
+                          <th className={styles.colRemark}>비고</th>
                         </tr>
+                      </thead>
+                      <tbody>
+                        {periodSummaryTableIssues.map((issue, idx) => {
+                          const isFirstRank = idx === 0;
+                          const pullScore =
+                            issue.impactMetrics?.publicPullScore ?? 35;
+                          const pushScore =
+                            issue.impactMetrics?.mediaPushScore ?? 50;
+                          const pullWidth = Math.max(
+                            4,
+                            Math.min(100, pullScore)
+                          );
+                          const pushWidth = Math.max(
+                            4,
+                            Math.min(100, pushScore)
+                          );
+                          const remarkInfo = resolveTableRemark(
+                            issue.impactMetrics
+                          );
+                          const labelText =
+                            issue.eventTitle ||
+                            issue.representativeKeywords[0] ||
+                            '주요 이슈';
+
+                          return (
+                            <tr
+                              key={issue.issueId}
+                              className={styles.summaryTableRow}
+                              onClick={() => {
+                                setSelectedTop10IssueId(issue.issueId);
+                                setActiveMenu('TOP10');
+                              }}
+                              title="클릭 시 해당 Top10 이슈 상세 화면으로 이동"
+                            >
+                              {/* 순위: 숫자 텍스트로만 출력 */}
+                              <td className={styles.cellRankText}>{idx + 1}</td>
+
+                              {/* 주제 */}
+                              <td className={styles.cellTopicText}>
+                                {labelText}
+                              </td>
+
+                              {/* 대중: 중간 기준 오른쪽 정렬, 왼쪽으로 성장 (1위만 대중 텍스트+수치가 그래프와 겹쳐 표시) */}
+                              <td className={styles.cellButterflyPublic}>
+                                <div className={styles.butterflyTrackPublic}>
+                                  <div
+                                    className={styles.butterflyBarPublic}
+                                    style={{ width: `${pullWidth}%` }}
+                                  />
+                                  {isFirstRank && (
+                                    <span
+                                      className={styles.butterflyOverlayPublic}
+                                    >
+                                      대중 {pullScore}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+
+                              {/* 언론: 중간 기준 왼쪽 정렬, 오른쪽으로 성장 (1위만 언론 텍스트+수치가 그래프와 겹쳐 표시) */}
+                              <td className={styles.cellButterflyMedia}>
+                                <div className={styles.butterflyTrackMedia}>
+                                  <div
+                                    className={styles.butterflyBarMedia}
+                                    style={{ width: `${pushWidth}%` }}
+                                  />
+                                  {isFirstRank && (
+                                    <span
+                                      className={styles.butterflyOverlayMedia}
+                                    >
+                                      언론 {pushScore}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+
+                              {/* 비고: 언론 과대, 언론 과소만 체크 */}
+                              <td className={styles.cellRemarkText}>
+                                {remarkInfo.remark ? (
+                                  <span className={remarkInfo.badgeClass}>
+                                    {remarkInfo.remark}
+                                  </span>
+                                ) : null}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* 실시간 대중 급상승 검색어 대조 바 */}
+                  {issuesData?.publicSearchTrends &&
+                    issuesData.publicSearchTrends.length > 0 && (
+                      <div className={styles.trendsStripBox}>
+                        <span
+                          style={{
+                            fontSize: '0.77rem',
+                            fontWeight: 800,
+                            color: '#0f172a',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4,
+                          }}
+                        >
+                          <Flame size={14} color="#dc2626" />
+                          실제 대중 급상승 검색어 (Google Trends KR):
+                        </span>
+                        {issuesData.publicSearchTrends.map((tr) => (
+                          <span
+                            key={tr.keyword}
+                            className={styles.trendItemChip}
+                          >
+                            <span>{tr.keyword}</span>
+                            <span className={styles.trendTrafficBadge}>
+                              {tr.trafficText}
+                            </span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                </section>
+
+                {/* 구체적 사건 추천 키워드 바 */}
+                <section className={styles.keywordPanel}>
+                  <div className={styles.keywordBarHeader}>
+                    <div className={styles.keywordBarTitle}>
+                      <Tag size={15} color="#2563eb" />
+                      <span>
+                        구체적 사건 추천 키워드 (클릭 시 해당 사건 이슈 필터링)
+                      </span>
+                    </div>
+                    {filters.selectedKeyword && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleUpdateFilter('selectedKeyword', null)
+                        }
+                        style={{
+                          fontSize: '0.76rem',
+                          color: '#2563eb',
+                          background: 'none',
+                          border: 'none',
+                          fontWeight: 800,
+                        }}
+                      >
+                        [키워드 필터 해제: #{filters.selectedKeyword}]
+                      </button>
+                    )}
+                  </div>
+
+                  <div className={styles.keywordCloud}>
+                    {periodRecommendedKeywords.map((kw) => {
+                      const isSelected = filters.selectedKeyword === kw.keyword;
+                      return (
+                        <button
+                          key={kw.keyword}
+                          type="button"
+                          className={`${styles.keywordPill} ${
+                            kw.isCompound ? styles.keywordPillCompound : ''
+                          } ${isSelected ? styles.keywordPillSelected : ''}`}
+                          onClick={() =>
+                            handleUpdateFilter(
+                              'selectedKeyword',
+                              isSelected ? null : kw.keyword
+                            )
+                          }
+                        >
+                          <span>{kw.keyword}</span>
+                          <span className={styles.keywordCount}>
+                            {kw.channelCount}개 매체 · {kw.articleCount}건
+                          </span>
+                        </button>
                       );
                     })}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* 실시간 대중 급상승 검색어 대조 바 */}
-              {issuesData?.publicSearchTrends &&
-                issuesData.publicSearchTrends.length > 0 && (
-                  <div className={styles.trendsStripBox}>
-                    <span
-                      style={{
-                        fontSize: '0.77rem',
-                        fontWeight: 800,
-                        color: '#0f172a',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 4,
-                      }}
-                    >
-                      <Flame size={14} color="#dc2626" />
-                      실제 대중 급상승 검색어 (Google Trends KR):
-                    </span>
-                    {issuesData.publicSearchTrends.map((tr) => (
-                      <span key={tr.keyword} className={styles.trendItemChip}>
-                        <span>{tr.keyword}</span>
-                        <span className={styles.trendTrafficBadge}>
-                          {tr.trafficText}
-                        </span>
-                      </span>
-                    ))}
                   </div>
+                </section>
+
+                {/* 요약된 이슈 카드 목록 (개별 기사는 등장하지 않고 통합 요약 문단만 표시) */}
+                {filteredIssues.length === 0 ? (
+                  <div className={styles.sectionCard}>
+                    선택하신 기간(
+                    <strong>
+                      {currentPeriodBounds.label}:{' '}
+                      {currentPeriodBounds.from === currentPeriodBounds.to
+                        ? currentPeriodBounds.from
+                        : `${currentPeriodBounds.from} ~ ${currentPeriodBounds.to}`}
+                    </strong>
+                    ) 또는 필터 조건에 해당하는 이슈가 없습니다.
+                  </div>
+                ) : (
+                  <section className={styles.issuesGrid}>
+                    {filteredIssues.map((issue) =>
+                      renderIssueSummaryCard(issue)
+                    )}
+                  </section>
                 )}
-            </section>
-
-            {/* 구체적 사건 추천 키워드 바 */}
-            <section className={styles.keywordPanel}>
-              <div className={styles.keywordBarHeader}>
-                <div className={styles.keywordBarTitle}>
-                  <Tag size={15} color="#2563eb" />
-                  <span>
-                    구체적 사건 추천 키워드 (클릭 시 해당 사건 이슈 필터링)
-                  </span>
-                </div>
-                {filters.selectedKeyword && (
-                  <button
-                    type="button"
-                    onClick={() => handleUpdateFilter('selectedKeyword', null)}
-                    style={{
-                      fontSize: '0.76rem',
-                      color: '#2563eb',
-                      background: 'none',
-                      border: 'none',
-                      fontWeight: 800,
-                    }}
-                  >
-                    [키워드 필터 해제: #{filters.selectedKeyword}]
-                  </button>
-                )}
-              </div>
-
-              <div className={styles.keywordCloud}>
-                {(issuesData?.recommendedKeywords || [])
-                  .slice(0, 24)
-                  .map((kw) => {
-                    const isSelected = filters.selectedKeyword === kw.keyword;
-                    return (
-                      <button
-                        key={kw.keyword}
-                        type="button"
-                        className={`${styles.keywordPill} ${
-                          kw.isCompound ? styles.keywordPillCompound : ''
-                        } ${isSelected ? styles.keywordPillSelected : ''}`}
-                        onClick={() =>
-                          handleUpdateFilter(
-                            'selectedKeyword',
-                            isSelected ? null : kw.keyword
-                          )
-                        }
-                      >
-                        <span>{kw.keyword}</span>
-                        <span className={styles.keywordCount}>
-                          {kw.channelCount}개 매체 · {kw.articleCount}건
-                        </span>
-                      </button>
-                    );
-                  })}
-              </div>
-            </section>
-
-            {/* 요약된 이슈 카드 목록 (개별 기사는 등장하지 않고 통합 요약 문단만 표시) */}
-            <section className={styles.issuesGrid}>
-              {filteredIssues.map((issue) => renderIssueSummaryCard(issue))}
-            </section>
+              </>
+            )}
           </>
         )}
 
@@ -893,53 +1717,329 @@ export function App() {
           <>
             {dbTab === 'CHANNEL_INFO' && (
               <>
-                <section className={styles.summaryStrip}>
-                  <div className={styles.statCard}>
-                    <span className={styles.statLabel}>
-                      수집 관리 채널 (일간지+방송사)
-                    </span>
-                    <span className={styles.statValue}>
-                      {checkpointData?.storageSummary.totalChannels ?? 19}곳
-                    </span>
-                    <span className={styles.statSub}>
-                      전국 종합일간지 Top 10 · 방송사 공식 유튜브 9곳 (1:1)
-                    </span>
-                  </div>
-                  <div className={styles.statCard}>
-                    <span className={styles.statLabel}>
-                      분석된 뉴스·방송 스크립트
-                    </span>
-                    <span className={styles.statValue}>
-                      {issuesData?.totalScriptsAnalyzed ?? 0}건
-                    </span>
-                    <span className={styles.statSub}>
-                      어제(11/08)~오늘(11/09) 누적 · Top10 적격{' '}
-                      {top10Issues.length}개
-                    </span>
-                  </div>
-                  <div className={styles.statCard}>
-                    <span className={styles.statLabel}>
-                      로컬 Raw 스크립트 용량
-                    </span>
-                    <span className={styles.statValue}>
-                      {checkpointData?.storageSummary.rawDiskKB ?? 0} KB
-                    </span>
-                    <span className={styles.statSub}>
-                      약 {checkpointData?.storageSummary.rawDiskMB ?? 0} MB (파일{' '}
-                      {checkpointData?.storageSummary.rawFilesCount ?? 0}개)
+                {/* 수집현황(1번탭) 최상위 세로 막대 그래프: 언론사별 기사 수 */}
+                <section className={styles.sectionCard}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <h2 className={styles.sectionTitle}>
+                      <BarChart2 size={20} color="#2563eb" />
+                      <span>언론사별 기사 수</span>
+                    </h2>
+                    <span className={styles.rangePill}>
+                      총 {channelArticleChartData.totalCount}건 (
+                      {chartPeriodBounds.label}:{' '}
+                      {chartPeriodBounds.from === chartPeriodBounds.to
+                        ? chartPeriodBounds.from
+                        : `${chartPeriodBounds.from} ~ ${chartPeriodBounds.to}`}
+                      )
                     </span>
                   </div>
-                  <div className={styles.statCard}>
-                    <span className={styles.statLabel}>
-                      원본 스크립트 보관·폐기 정책
-                    </span>
-                    <span className={styles.statValue}>
-                      {issuesData?.retentionPolicy.retentionDays ?? 30}일 보관 후
-                      폐기
-                    </span>
-                    <span className={styles.statSub}>
-                      문장 발췌 후 1개월 트레이스 유지 뒤 자동 폐기
-                    </span>
+
+                  {/* 그래프 필터 패널: 언론사 선택(Quick selector + 개별 복수선택) / 기간 / 제목·내용·Smart(이슈 UUID) */}
+                  <div className={styles.chartControlPanel}>
+                    {/* 1) 언론사 Quick Selector 및 개별 복수 선택 */}
+                    <div className={styles.chartControlRow}>
+                      <span className={styles.chartControlLabel}>
+                        언론사 선택
+                      </span>
+                      <div className={styles.chartControlOptions}>
+                        {QUICK_CHANNEL_GROUPS.map((grp) => {
+                          const isSameSet =
+                            grp.channelIds.length ===
+                              chartSelectedChannels.length &&
+                            grp.channelIds.every((id) =>
+                              chartSelectedChannels.includes(id)
+                            );
+                          return (
+                            <button
+                              key={grp.id}
+                              type="button"
+                              className={`${styles.quickSelectBtn} ${
+                                isSameSet ? styles.quickSelectBtnActive : ''
+                              }`}
+                              onClick={() =>
+                                setChartSelectedChannels(grp.channelIds)
+                              }
+                            >
+                              {grp.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className={styles.chartControlRow}>
+                      <span className={styles.chartControlLabel}>
+                        개별 선택
+                      </span>
+                      <div className={styles.chartControlOptions}>
+                        {Object.values(checkpointData?.channels || {}).map(
+                          (ch) => {
+                            const selected = chartSelectedChannels.includes(
+                              ch.channelId
+                            );
+                            const label = formatChannelDisplayName(ch.name);
+                            return (
+                              <button
+                                key={ch.channelId}
+                                type="button"
+                                className={`${styles.channelChipBtn} ${
+                                  selected ? styles.channelChipBtnSelected : ''
+                                }`}
+                                onClick={() => {
+                                  setChartSelectedChannels((prev) =>
+                                    prev.includes(ch.channelId)
+                                      ? prev.filter((id) => id !== ch.channelId)
+                                      : [...prev, ch.channelId]
+                                  );
+                                }}
+                                title={`${ch.name} 선택/해제 (복수 선택 가능)`}
+                              >
+                                {label}
+                              </button>
+                            );
+                          }
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 2) 기간 필터: 오늘, 어제, 이번주, 저번주, 이번달, 저번달 */}
+                    <div className={styles.chartControlRow}>
+                      <span className={styles.chartControlLabel}>기간</span>
+                      <div className={styles.chartControlOptions}>
+                        {DB_CHART_PERIOD_TABS.map((pt) => (
+                          <button
+                            key={pt.key}
+                            type="button"
+                            className={`${styles.quickSelectBtn} ${
+                              chartPeriodTab === pt.key
+                                ? styles.quickSelectBtnActive
+                                : ''
+                            }`}
+                            onClick={() => setChartPeriodTab(pt.key)}
+                          >
+                            {pt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 3) 기사제목 / 기사내용 포함 검색 + Smart 옵션 (이슈 UUID 기반 연관 기사 추리기) */}
+                    <div className={styles.chartControlRow}>
+                      <span className={styles.chartControlLabel}>
+                        조건 / Smart
+                      </span>
+                      <div className={styles.chartControlOptions}>
+                        <label
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '0.78rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={chartSearchInTitle}
+                            onChange={(e) =>
+                              setChartSearchInTitle(e.target.checked)
+                            }
+                          />
+                          <span>기사제목</span>
+                        </label>
+
+                        <label
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '0.78rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={chartSearchInBody}
+                            onChange={(e) =>
+                              setChartSearchInBody(e.target.checked)
+                            }
+                          />
+                          <span>기사내용</span>
+                        </label>
+
+                        <input
+                          type="text"
+                          className={styles.smartFilterInput}
+                          placeholder="제목/내용 포함 단어 입력..."
+                          value={chartSearchText}
+                          onChange={(e) => setChartSearchText(e.target.value)}
+                        />
+
+                        <label
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '0.78rem',
+                            fontWeight: 800,
+                            color: '#1d4ed8',
+                            cursor: 'pointer',
+                            marginLeft: '0.35rem',
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={chartSmartMode}
+                            onChange={(e) =>
+                              setChartSmartMode(e.target.checked)
+                            }
+                          />
+                          <span>Smart 옵션 (특정 이슈 연관 기사만)</span>
+                        </label>
+
+                        {chartSmartMode && (
+                          <select
+                            className={styles.smartIssueSelect}
+                            value={
+                              activeSmartIssue?.uuid ||
+                              activeSmartIssue?.issueId ||
+                              ''
+                            }
+                            onChange={(e) =>
+                              setChartSelectedIssueUuid(e.target.value)
+                            }
+                          >
+                            {chartPeriodIssues.map((iss) => {
+                              const u = iss.uuid || iss.issueId;
+                              const shortUuid = u.slice(0, 8);
+                              const titleLabel =
+                                iss.eventTitle ||
+                                iss.representativeKeywords[0] ||
+                                iss.title.slice(0, 20);
+                              return (
+                                <option key={u} value={u}>
+                                  [{shortUuid}] {titleLabel} (
+                                  {iss.mentionStats.totalCount}건 ·{' '}
+                                  {iss.firstReportedAt.slice(0, 10)})
+                                </option>
+                              );
+                            })}
+                          </select>
+                        )}
+                      </div>
+                    </div>
+
+                    {chartSmartMode && activeSmartIssue && (
+                      <div
+                        style={{
+                          fontSize: '0.76rem',
+                          color: '#1e40af',
+                          background: '#eff6ff',
+                          border: '1px solid #bfdbfe',
+                          borderRadius: '6px',
+                          padding: '0.38rem 0.65rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          flexWrap: 'wrap',
+                          gap: '0.4rem',
+                        }}
+                      >
+                        <span>
+                          <strong>선택된 이슈 문서:</strong>{' '}
+                          {activeSmartIssue.eventTitle ||
+                            activeSmartIssue.representativeKeywords[0]}{' '}
+                          (연관 보도 매체{' '}
+                          {activeSmartIssue.mentionStats.uniqueChannelsCount}곳 ·
+                          총 {activeSmartIssue.mentionStats.totalCount}건)
+                        </span>
+                        <span style={{ fontFamily: 'monospace' }}>
+                          UUID: {activeSmartIssue.uuid || activeSmartIssue.issueId}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 세로: 기사 수 / 가로: 언론사(줄인 이름 세로 출력) 막대 그래프 */}
+                  <div className={styles.verticalChartLayout}>
+                    <div className={styles.yAxisTitleCol}>기사 수</div>
+
+                    <div className={styles.yAxisScaleCol}>
+                      <span>{channelArticleChartData.maxCount}</span>
+                      <span>
+                        {Math.round(channelArticleChartData.maxCount * 0.75)}
+                      </span>
+                      <span>
+                        {Math.round(channelArticleChartData.maxCount * 0.5)}
+                      </span>
+                      <span>
+                        {Math.round(channelArticleChartData.maxCount * 0.25)}
+                      </span>
+                      <span>0</span>
+                    </div>
+
+                    <div className={styles.verticalBarsStage}>
+                      <div className={styles.verticalBarsPlotArea}>
+                        {channelArticleChartData.bars.map((bar) => {
+                          const heightPct =
+                            bar.count > 0
+                              ? Math.max(
+                                  4,
+                                  Math.round(
+                                    (bar.count /
+                                      channelArticleChartData.maxCount) *
+                                      100
+                                  )
+                                )
+                              : 0;
+                          return (
+                            <div
+                              key={bar.channelId}
+                              className={styles.verticalBarCol}
+                              title={`${bar.name} (${bar.shortName}): ${bar.count}건`}
+                            >
+                              <span className={styles.verticalBarCountNum}>
+                                {bar.count}
+                              </span>
+                              <div
+                                className={
+                                  bar.mediaType === 'NEWSPAPER'
+                                    ? styles.verticalBarFillPress
+                                    : styles.verticalBarFillBroadcast
+                                }
+                                style={{ height: `${heightPct}%` }}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className={styles.verticalXAxisLabelsRow}>
+                        {channelArticleChartData.bars.map((bar) => (
+                          <div
+                            key={bar.channelId}
+                            className={styles.verticalMediaNameCell}
+                            title={bar.name}
+                          >
+                            <span className={styles.verticalMediaText}>
+                              {bar.shortName}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className={styles.xAxisBottomCaption}>언론사</div>
+                    </div>
                   </div>
                 </section>
 
@@ -949,11 +2049,6 @@ export function App() {
                       <HardDrive size={20} />
                       <span>채널별 수집 완료 범위 DB</span>
                     </h2>
-                    <p className={styles.sectionDesc}>
-                      상단 헤더 우측의 <strong>표시열 아이콘</strong>(필터 아이콘
-                      왼쪽)을 눌러 `구분`, `ID`, `중단 복구 커서`, `마지막 수집
-                      시각` 등의 열을 자유롭게 보이기/숨기기할 수 있습니다.
-                    </p>
                   </div>
 
                   <div className={styles.tableWrapper}>
@@ -961,7 +2056,7 @@ export function App() {
                       <thead>
                         <tr>
                           {dbColumns.category && <th>구분</th>}
-                          {dbColumns.name && <th>채널명 (별명)</th>}
+                          {dbColumns.name && <th>채널명</th>}
                           {dbColumns.channelId && <th>ID</th>}
                           {dbColumns.startDate && <th>수집 시작</th>}
                           {dbColumns.endDate && <th>수집 종료</th>}
@@ -976,7 +2071,6 @@ export function App() {
                           const bounds = getChannelDateBounds(
                             ch.completedRanges
                           );
-                          const alias = getMediaAlias(ch.name, mediaAliases);
                           return (
                             <tr key={ch.channelId}>
                               {dbColumns.category && (
@@ -994,15 +2088,9 @@ export function App() {
                               )}
                               {dbColumns.name && (
                                 <td>
-                                  <strong>{alias}</strong>{' '}
-                                  <span
-                                    style={{
-                                      color: '#64748b',
-                                      fontSize: '0.76rem',
-                                    }}
-                                  >
-                                    ({ch.name})
-                                  </span>
+                                  <strong>
+                                    {formatChannelDisplayName(ch.name)}
+                                  </strong>
                                 </td>
                               )}
                               {dbColumns.channelId && (
@@ -1088,114 +2176,165 @@ export function App() {
                 <div>
                   <h2 className={styles.sectionTitle}>
                     <Tv size={20} />
-                    <span>
-                      방송사 대본 (방송사 유튜브 설명란 대본 및 기본 자막 활용 분석)
-                    </span>
+                    <span>방송사 대본</span>
                   </h2>
-                  <p className={styles.sectionDesc}>
-                    9개 주요 방송사 공식 뉴스 유튜브 채널(1:1 매핑)의 영상 설명란(
-                    <code>media:description</code>) 리포트 대본 전문 포함 여부 및 기본
-                    자막 트랙 활용성을 분석한 결과입니다.
-                  </p>
                 </div>
 
                 <div className={styles.tableWrapper}>
                   <table className={styles.dataTable}>
                     <thead>
                       <tr>
-                        <th>방송사 채널 (별명)</th>
-                        <th>유튜브 채널 ID (`1:1`)</th>
-                        <th>공식 유튜브 RSS</th>
-                        <th>설명란(Description) 대본 평균 길이</th>
-                        <th>기본 자막 트랙</th>
-                        <th>포털 TV뉴스 대본 (보조)</th>
-                        <th>권장 스크립트 수집 방식</th>
+                        <th>채널명</th>
+                        <th>채널ID</th>
+                        <th>공식RSS</th>
+                        <th>설명란</th>
+                        <th>기본 자막</th>
+                        <th>뉴스대본</th>
+                        <th>스크립트 수집방식</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {parserReport.broadcasters.map((bc) => (
-                        <tr key={bc.channelId}>
-                          <td>
-                            <strong>
-                              {getMediaAlias(bc.name, mediaAliases)}
-                            </strong>{' '}
-                            <span
-                              style={{ color: '#64748b', fontSize: '0.76rem' }}
-                            >
-                              ({bc.name} · {bc.youtubeHandle})
-                            </span>
-                          </td>
-                          <td
-                            style={{
-                              fontFamily: 'monospace',
-                              fontSize: '0.78rem',
-                            }}
-                          >
-                            {bc.verifiedYoutubeChannelId}
-                          </td>
-                          <td>
-                            {bc.youtubeRssReachable ? (
-                              <span className={styles.badgeOk}>
-                                정상 ({bc.rssVideoCount}건)
-                              </span>
-                            ) : (
-                              <span className={styles.badgeWarn}>확인 필요</span>
-                            )}
-                          </td>
-                          <td>
-                            {bc.descriptionScriptAnalysis
-                              .providesScriptInDescription ? (
-                              <span className={styles.badgeOk}>
-                                평균{' '}
-                                {
-                                  bc.descriptionScriptAnalysis
-                                    .avgDescriptionChars
-                                }
-                                자 (대본 전문 제공)
-                              </span>
-                            ) : (
-                              <span className={styles.badgeWarn}>
-                                평균{' '}
-                                {
-                                  bc.descriptionScriptAnalysis
-                                    .avgDescriptionChars
-                                }
-                                자 (요약문)
-                              </span>
-                            )}
-                          </td>
-                          <td>
-                            {bc.youtubeCaptionTrackAnalysis.hasCaptionTracks ? (
-                              <span className={styles.badgeOk}>자막 트랙 있음</span>
-                            ) : (
-                              <span
-                                style={{ color: '#64748b', fontSize: '0.78rem' }}
+                      {parserReport.broadcasters
+                        .filter(() => filters.mediaTypes.includes('BROADCAST'))
+                        .filter((bc) => {
+                          if (!filters.searchQuery.trim()) return true;
+                          const q = filters.searchQuery.trim().toLowerCase();
+                          return (
+                            bc.name.toLowerCase().includes(q) ||
+                            getMediaAlias(bc.name, mediaAliases)
+                              .toLowerCase()
+                              .includes(q) ||
+                            bc.channelId.toLowerCase().includes(q)
+                          );
+                        })
+                        .map((bc) => {
+                          const scriptFormula = bc.descriptionScriptAnalysis
+                            .providesScriptInDescription
+                            ? 'A + B + C'
+                            : 'B + C';
+                          return (
+                            <tr key={bc.channelId}>
+                              <td>
+                                <strong>
+                                  {formatChannelDisplayName(bc.name)}
+                                </strong>
+                              </td>
+                              <td
+                                style={{
+                                  fontFamily: 'monospace',
+                                  fontSize: '0.78rem',
+                                }}
                               >
-                                설명란 대본 우선 활용
-                              </span>
-                            )}
-                          </td>
-                          <td>
-                            {bc.portalBroadcastTranscriptFallback.reachable ? (
-                              <span>
-                                정상 (1p{' '}
-                                {
-                                  bc.portalBroadcastTranscriptFallback
-                                    .page1TranscriptCount
-                                }
-                                건)
-                              </span>
-                            ) : (
-                              <span>-</span>
-                            )}
-                          </td>
-                          <td style={{ fontSize: '0.8rem', color: '#334155' }}>
-                            {bc.recommendedTranscriptSource}
-                          </td>
-                        </tr>
-                      ))}
+                                {bc.verifiedYoutubeChannelId}
+                              </td>
+                              <td>
+                                {bc.youtubeRssReachable ? (
+                                  <span className={styles.badgeOk}>
+                                    정상 ({bc.rssVideoCount}건)
+                                  </span>
+                                ) : (
+                                  <span className={styles.badgeWarn}>
+                                    확인 필요
+                                  </span>
+                                )}
+                              </td>
+                              <td>
+                                {bc.descriptionScriptAnalysis
+                                  .providesScriptInDescription ? (
+                                  <span className={styles.badgeOk}>
+                                    평균{' '}
+                                    {
+                                      bc.descriptionScriptAnalysis
+                                        .avgDescriptionChars
+                                    }
+                                    자 (전문)
+                                  </span>
+                                ) : (
+                                  <span className={styles.badgeWarn}>
+                                    평균{' '}
+                                    {
+                                      bc.descriptionScriptAnalysis
+                                        .avgDescriptionChars
+                                    }
+                                    자 (요약)
+                                  </span>
+                                )}
+                              </td>
+                              <td>
+                                {bc.youtubeCaptionTrackAnalysis
+                                  .hasCaptionTracks ? (
+                                  <span className={styles.badgeOk}>제공</span>
+                                ) : (
+                                  <span
+                                    style={{
+                                      color: '#64748b',
+                                      fontSize: '0.78rem',
+                                    }}
+                                  >
+                                    보조 활용
+                                  </span>
+                                )}
+                              </td>
+                              <td>
+                                {bc.portalBroadcastTranscriptFallback
+                                  .reachable ? (
+                                  <span>
+                                    정상 (1p{' '}
+                                    {
+                                      bc.portalBroadcastTranscriptFallback
+                                        .page1TranscriptCount
+                                    }
+                                    건)
+                                  </span>
+                                ) : (
+                                  <span>-</span>
+                                )}
+                              </td>
+                              <td>
+                                <span className={styles.codeFormulaBadge}>
+                                  {scriptFormula}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </table>
+                </div>
+
+                {/* 스크립트 수집방식 A, B, C 설명란 */}
+                <div className={styles.remarkLegendBox}>
+                  <span className={styles.remarkLegendTitle}>
+                    스크립트 수집방식 설명 (A · B · C)
+                  </span>
+                  <div className={styles.remarkLegendGrid}>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>A</span>
+                      <span>
+                        <strong>유튜브 설명란(Description) 대본 파싱:</strong>{' '}
+                        공식 유튜브 RSS의 <code>media:description</code>에 수록된
+                        뉴스 리포트 원고 전문을 1순위로 추출합니다.
+                      </span>
+                    </div>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>B</span>
+                      <span>
+                        <strong>유튜브 기본 자막 트랙 추출:</strong> 설명란에
+                        리포트 전문이 없거나 짧은 영상의 경우 유튜브 기본 제공
+                        한국어 자막 트랙(<code>captionTracks</code>)을 보조로
+                        활용합니다.
+                      </span>
+                    </div>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>C</span>
+                      <span>
+                        <strong>포털 TV뉴스 리포트 원고 보강:</strong> 방송사별
+                        일자별 포털 TV뉴스 아카이브(<code>LPOD</code>)의 리포트
+                        대본을 결합하여 누락 없는 당일·과거 보도 스크립트를
+                        완성합니다.
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </section>
             )}
@@ -1205,110 +2344,207 @@ export function App() {
                 <div>
                   <h2 className={styles.sectionTitle}>
                     <Newspaper size={20} />
-                    <span>
-                      RSS분석 (전국 종합일간지 Top 10: 포털 정답지 vs 공식 RSS 및 원문
-                      HTML 파싱 분석)
-                    </span>
+                    <span>RSS분석</span>
                   </h2>
-                  <p className={styles.sectionDesc}>
-                    네이버 언론사별 뉴스 목록(`oid` + 날짜)을 정답지로 삼으면서, 각
-                    언론사의 공식 RSS 피드 작동 여부 및 원문 웹페이지의 표준 메타태그(
-                    `article:published_time`, `JSON-LD`) 유무를 진단한 결과입니다.
-                  </p>
                 </div>
 
                 <div className={styles.tableWrapper}>
                   <table className={styles.dataTable}>
                     <thead>
                       <tr>
-                        <th>순위 · 언론사 (별명)</th>
-                        <th>포털 정답지 (입력시각·원문링크)</th>
-                        <th>공식 RSS 피드 응답</th>
-                        <th>RSS 본문 포함 수준</th>
-                        <th>원문 DOM 표준 셀렉터</th>
-                        <th>공식 RSS 전환 파싱 전략</th>
+                        <th style={{ width: '58px' }}>순위</th>
+                        <th>언론사</th>
+                        <th>포털정답지</th>
+                        <th>RSS응답</th>
+                        <th>본문포함</th>
+                        <th>DOM 선택자</th>
+                        <th>파싱 전략</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {parserReport.newspapers.map((np) => {
-                        const workingRss = np.officialRssDiagnostics.filter(
-                          (r) => r.reachable
-                        );
-                        const bestRss =
-                          workingRss[0] || np.officialRssDiagnostics[0];
-                        return (
-                          <tr key={np.channelId}>
-                            <td>
-                              <strong>
-                                {np.rank}위.{' '}
-                                {getMediaAlias(np.name, mediaAliases)}
-                              </strong>{' '}
-                              <span
-                                style={{ color: '#64748b', fontSize: '0.75rem' }}
-                              >
-                                ({np.name} · oid: {np.naverOid})
-                              </span>
-                            </td>
-                            <td>
-                              {np.portalGroundTruth.reachable ? (
-                                <span className={styles.badgeOk}>
-                                  <CheckCircle2
-                                    size={12}
-                                    style={{ verticalAlign: '-2px' }}
-                                  />{' '}
-                                  정상 (
-                                  {np.portalGroundTruth.samplePublishedAt.slice(
-                                    5,
-                                    16
-                                  )}
-                                  )
+                      {parserReport.newspapers
+                        .filter(() => filters.mediaTypes.includes('NEWSPAPER'))
+                        .filter((np) => {
+                          if (!filters.searchQuery.trim()) return true;
+                          const q = filters.searchQuery.trim().toLowerCase();
+                          return (
+                            np.name.toLowerCase().includes(q) ||
+                            getMediaAlias(np.name, mediaAliases)
+                              .toLowerCase()
+                              .includes(q) ||
+                            np.channelId.toLowerCase().includes(q)
+                          );
+                        })
+                        .map((np) => {
+                          const workingRss = np.officialRssDiagnostics.filter(
+                            (r) => r.reachable
+                          );
+                          const bestRss =
+                            workingRss[0] || np.officialRssDiagnostics[0];
+                          const domFormula = resolveNewspaperDomSymbols(
+                            np.originalArticleDom?.detectedSelectors || []
+                          );
+                          const strategyFormula =
+                            resolveNewspaperStrategyFormula(
+                              workingRss.length > 0,
+                              bestRss?.contentProvideLevel
+                            );
+
+                          return (
+                            <tr key={np.channelId}>
+                              <td>
+                                <strong>{np.rank}</strong>
+                              </td>
+                              <td>
+                                <strong>
+                                  {formatChannelDisplayName(np.name)}
+                                </strong>
+                              </td>
+                              <td>
+                                {np.portalGroundTruth.reachable ? (
+                                  <span className={styles.badgeOk}>
+                                    <CheckCircle2
+                                      size={12}
+                                      style={{ verticalAlign: '-2px' }}
+                                    />{' '}
+                                    정상 (
+                                    {np.portalGroundTruth.samplePublishedAt.slice(
+                                      5,
+                                      16
+                                    )}
+                                    )
+                                  </span>
+                                ) : (
+                                  <span className={styles.badgeWarn}>오류</span>
+                                )}
+                              </td>
+                              <td>
+                                {workingRss.length > 0 ? (
+                                  <span className={styles.badgeOk}>
+                                    작동 ({workingRss.length}/
+                                    {np.officialRssDiagnostics.length}개 ·{' '}
+                                    {bestRss?.itemCount ?? 0}건)
+                                  </span>
+                                ) : (
+                                  <span className={styles.badgeWarn}>
+                                    <AlertCircle
+                                      size={12}
+                                      style={{ verticalAlign: '-2px' }}
+                                    />{' '}
+                                    미제공/변경
+                                  </span>
+                                )}
+                              </td>
+                              <td>
+                                {bestRss ? (
+                                  <span>
+                                    {bestRss.contentProvideLevel} (평균{' '}
+                                    {bestRss.avgDescriptionChars}자)
+                                  </span>
+                                ) : (
+                                  <span>-</span>
+                                )}
+                              </td>
+                              <td>
+                                <span className={styles.codeFormulaBadgeDom}>
+                                  {domFormula}
                                 </span>
-                              ) : (
-                                <span className={styles.badgeWarn}>오류</span>
-                              )}
-                            </td>
-                            <td>
-                              {workingRss.length > 0 ? (
-                                <span className={styles.badgeOk}>
-                                  작동 ({workingRss.length}/
-                                  {np.officialRssDiagnostics.length}개 ·{' '}
-                                  {bestRss?.itemCount ?? 0}건)
+                              </td>
+                              <td>
+                                <span className={styles.codeFormulaBadge}>
+                                  {strategyFormula}
                                 </span>
-                              ) : (
-                                <span className={styles.badgeWarn}>
-                                  <AlertCircle
-                                    size={12}
-                                    style={{ verticalAlign: '-2px' }}
-                                  />{' '}
-                                  RSS 미제공/변경
-                                </span>
-                              )}
-                            </td>
-                            <td>
-                              {bestRss ? (
-                                <span>
-                                  {bestRss.contentProvideLevel} (평균{' '}
-                                  {bestRss.avgDescriptionChars}자)
-                                </span>
-                              ) : (
-                                <span>-</span>
-                              )}
-                            </td>
-                            <td
-                              style={{ fontSize: '0.76rem', color: '#475569' }}
-                            >
-                              {np.originalArticleDom?.detectedSelectors?.join(
-                                ', '
-                              ) || '추가 점검 필요'}
-                            </td>
-                            <td style={{ fontSize: '0.8rem', color: '#334155' }}>
-                              {np.parsingStrategyRecommendation}
-                            </td>
-                          </tr>
-                        );
-                      })}
+                              </td>
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </table>
+                </div>
+
+                {/* 비고: DOM 선택자(ㄱ~ㅁ) 및 파싱 전략(A~D) 서술 */}
+                <div className={styles.remarkLegendBox}>
+                  <span className={styles.remarkLegendTitle}>
+                    비고 — DOM 선택자 (ㄱ ~ ㅁ)
+                  </span>
+                  <div className={styles.remarkLegendGrid}>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>ㄱ</span>
+                      <span>
+                        <code>meta[property=&quot;article:published_time&quot;]</code>{' '}
+                        (OpenGraph 기사 최초 입력 시각 메타태그)
+                      </span>
+                    </div>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>ㄴ</span>
+                      <span>
+                        <code>script[type=&quot;application/ld+json&quot;]</code>{' '}
+                        (구조화 데이터 JSON-LD 뉴스 기사 스키마)
+                      </span>
+                    </div>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>ㄷ</span>
+                      <span>
+                        <code>&lt;article&gt;</code> (HTML5 시맨틱 기사 본문
+                        컨테이너 태그)
+                      </span>
+                    </div>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>ㄹ</span>
+                      <span>
+                        <code>#article-body</code> (ID 기반 기사 본문 영역
+                        셀렉터)
+                      </span>
+                    </div>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>ㅁ</span>
+                      <span>
+                        <code>.article_body / .article_view</code> (클래스 기반
+                        기사 본문 영역 셀렉터)
+                      </span>
+                    </div>
+                  </div>
+
+                  <span
+                    className={styles.remarkLegendTitle}
+                    style={{ marginTop: '0.4rem' }}
+                  >
+                    비고 — 파싱 전략 (A ~ D)
+                  </span>
+                  <div className={styles.remarkLegendGrid}>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>A</span>
+                      <span>
+                        <strong>공식 RSS 본문 전문 단독 수집:</strong> 공식 RSS에
+                        기사 본문 전문(<code>FULL_TEXT</code>)이 포함되어 있어
+                        RSS 단독 파싱이 가능합니다.
+                      </span>
+                    </div>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>B</span>
+                      <span>
+                        <strong>공식 RSS / Sitemap URL 수집:</strong> 공식 RSS가
+                        요약문 또는 링크만 제공하므로 최신 기사 원문 URL 목록을
+                        수집합니다.
+                      </span>
+                    </div>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>C</span>
+                      <span>
+                        <strong>포털 정답지(LPOD) 일자별 수집:</strong> 언론사별
+                        일자별 목록(<code>oid + date</code>)에서 기사 입력 시각과
+                        원문 링크(<code>originallink</code>)를 수집합니다.
+                      </span>
+                    </div>
+                    <div className={styles.remarkLegendItem}>
+                      <span className={styles.remarkCodeKey}>D</span>
+                      <span>
+                        <strong>원문 웹페이지 DOM 직접 파싱 결합:</strong> 원문
+                        URL에 접속하여 표준 DOM 선택자(<code>ㄱ~ㅁ</code>)로
+                        메타데이터 및 본문을 직접 추출·결합합니다.
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </section>
             )}

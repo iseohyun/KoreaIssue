@@ -208,17 +208,6 @@
   box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
 }
 
-/* 10위 구독자 수 기준 수직 점선 */
-.cutlineValueVertical {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  border-left: 2px dashed rgba(220, 38, 38, 0.55);
-  z-index: 14;
-  transition: left 0.36s cubic-bezier(0.33, 1, 0.68, 1);
-  pointer-events: none;
-}
-
 /* 개별 언론사 가로막대 행 (순위 변동 시 top 위치가 부드럽게 이동) */
 .hbarRow {
   position: absolute;
@@ -233,10 +222,11 @@
 
 .hbarLabelCol {
   width: 102px;
+  padding-left: 2px;
   padding-right: 8px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 5px;
   flex-shrink: 0;
 }
@@ -249,7 +239,7 @@
   background: #e2e8f0;
   color: #334155;
   min-width: 32px;
-  text-align: center;
+  text-align: left;
   font-variant-numeric: tabular-nums;
 }
 
@@ -259,13 +249,14 @@
 }
 
 .mediaAliasLabel {
+  flex: 1;
   font-size: 0.78rem;
   font-weight: 800;
   color: #0f172a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 54px;
+  max-width: 58px;
   text-align: right;
 }
 
@@ -351,6 +342,21 @@
   gap: 0.9rem;
 }
 
+.tableHeaderRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tableUnitCaption {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
 .tableWrapper {
   width: 100%;
   max-width: 100%;
@@ -362,26 +368,31 @@
   max-width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
   word-break: break-word;
 }
 
 .dataTable th,
 .dataTable td {
-  padding: 0.45rem 0.3rem;
+  padding: 0.45rem 0.35rem;
   border-bottom: 1px solid #e2e8f0;
   text-align: right;
   word-break: break-word;
 }
 
+/* 순위는 왼쪽정렬 */
 .dataTable th:first-child,
-.dataTable td:first-child,
-.dataTable th:nth-child(2),
-.dataTable td:nth-child(2),
-.dataTable th:nth-child(3),
-.dataTable td:nth-child(3) {
+.dataTable td:first-child {
+  width: 48px;
   text-align: left;
+}
+
+/* 별명(신문사/방송사 이름)은 오른쪽 정렬 */
+.dataTable th:nth-child(2),
+.dataTable td:nth-child(2) {
+  width: 78px;
+  text-align: right;
 }
 
 .dataTable th {
@@ -394,32 +405,34 @@
   background: #f8fafc;
 }
 
-.rowCutlineBorder td {
-  border-bottom: 2.5px dashed #dc2626;
-}
-
-.adoptedBadge {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  background: #dbeafe;
-  color: #1d4ed8;
-}
-
-.candidateBadge {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  background: #f1f5f9;
-  color: #64748b;
-}
-
 .activeYearCol {
   background: #eff6ff !important;
   font-weight: 800;
   color: #1d4ed8;
+}
+
+.tableFootnoteBox {
+  margin-top: 0.2rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 0.75rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.tableFootnoteTitle {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.tableFootnoteList {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
 }

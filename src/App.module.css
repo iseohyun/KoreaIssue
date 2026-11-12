@@ -1130,3 +1130,463 @@
   gap: 0.75rem;
   margin-top: 0.25rem;
 }
+
+/* 수집현황(1번탭): 최상위 세로 막대 그래프 (언론사별 기사 수) */
+.chartControlPanel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.chartControlRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.chartControlLabel {
+  min-width: 72px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #334155;
+  padding-top: 4px;
+}
+
+.chartControlOptions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+  flex: 1;
+}
+
+.quickSelectBtn {
+  height: 27px;
+  padding: 0 9px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.quickSelectBtn:hover {
+  border-color: #2563eb;
+  color: #1d4ed8;
+}
+
+.quickSelectBtnActive {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #ffffff;
+}
+
+.channelChipBtn {
+  height: 25px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 0.73rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.channelChipBtnSelected {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  font-weight: 800;
+}
+
+.smartFilterInput {
+  height: 30px;
+  min-width: 190px;
+  padding: 0 10px;
+  border-radius: 7px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  font-size: 0.79rem;
+  color: #0f172a;
+}
+
+.smartIssueSelect {
+  height: 32px;
+  max-width: 100%;
+  min-width: 280px;
+  padding: 0 10px;
+  border-radius: 7px;
+  border: 1px solid #93c5fd;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.verticalChartLayout {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem 0.25rem;
+  min-height: 270px;
+}
+
+.yAxisTitleCol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #475569;
+  letter-spacing: 2px;
+  padding-right: 2px;
+}
+
+.yAxisScaleCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 64px;
+  min-width: 34px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
+.verticalBarsStage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.verticalBarsPlotArea {
+  position: relative;
+  height: 190px;
+  border-left: 1px solid #cbd5e1;
+  border-bottom: 2px solid #94a3b8;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 4px;
+  padding: 18px 8px 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(226, 232, 240, 0.55) 0px,
+    rgba(226, 232, 240, 0.55) 1px,
+    transparent 1px,
+    transparent 25%
+  );
+}
+
+.verticalBarCol {
+  flex: 1;
+  max-width: 44px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.verticalBarCountNum {
+  font-size: 0.71rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.verticalBarFillPress {
+  width: 68%;
+  min-width: 12px;
+  max-width: 26px;
+  border-radius: 5px 5px 0 0;
+  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+  transition: height 0.25s ease;
+}
+
+.verticalBarFillBroadcast {
+  width: 68%;
+  min-width: 12px;
+  max-width: 26px;
+  border-radius: 5px 5px 0 0;
+  background: linear-gradient(180deg, #0d9488 0%, #0f766e 100%);
+  transition: height 0.25s ease;
+}
+
+.verticalXAxisLabelsRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  gap: 4px;
+  padding: 6px 8px 0;
+  min-height: 60px;
+}
+
+.verticalMediaNameCell {
+  flex: 1;
+  max-width: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.verticalMediaText {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1.15;
+  letter-spacing: 1px;
+  user-select: none;
+}
+
+.xAxisBottomCaption {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #475569;
+  margin-top: 4px;
+}
+
+/* 방송사 대본 & RSS분석 코드 기호 배지 및 설명란/비고 범례 박스 */
+.codeFormulaBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  white-space: nowrap;
+}
+
+.codeFormulaBadgeDom {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.remarkLegendBox {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.remarkLegendTitle {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.remarkLegendGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 0.4rem 1rem;
+}
+
+.remarkLegendItem {
+  font-size: 0.79rem;
+  color: #334155;
+  line-height: 1.5;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.remarkCodeKey {
+  display: inline-block;
+  min-width: 22px;
+  text-align: center;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 0.74rem;
+}
+
+/* 추가 보도 표시 배지 및 이슈 요약 '검색' 탭 (후보 이슈 선택 뷰) */
+.inlineFollowUpBadge {
+  display: inline-block;
+  padding: 0.08rem 0.38rem;
+  margin-right: 0.3rem;
+  border-radius: 4px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  font-size: 0.7rem;
+  font-weight: 800;
+  vertical-align: 1px;
+}
+
+.additionalReportChip {
+  font-size: 0.73rem;
+  color: #1d4ed8;
+  font-weight: 800;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 0.14rem 0.5rem;
+  border-radius: 6px;
+}
+
+.searchTabHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.searchTabInputRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.searchTabInputBox {
+  flex: 1;
+  min-width: 240px;
+  height: 38px;
+  padding: 0 0.85rem;
+  border-radius: 9px;
+  border: 1.5px solid #93c5fd;
+  background: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #0f172a;
+  outline: none;
+}
+
+.searchTabInputBox:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.candidateListSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-top: 0.25rem;
+}
+
+.candidateListTitle {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+.emptyCandidateNotice {
+  padding: 1rem;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  font-size: 0.84rem;
+  color: #475569;
+  text-align: center;
+}
+
+.candidateIssuesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 0.55rem;
+  max-height: 290px;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.candidateIssueBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.28rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.candidateIssueBtn:hover {
+  border-color: #60a5fa;
+  background: #ffffff;
+}
+
+.candidateIssueBtnActive {
+  border: 2px solid #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.14);
+}
+
+.candidateBtnTopRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+}
+
+.candidateRankTag {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 800;
+}
+
+.candidateDateSpan {
+  color: #475569;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.candidateCountSpan {
+  margin-left: auto;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.candidateTitleText {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.candidateKwPreview {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+}
