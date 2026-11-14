@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updatedAt": "2026-11-14T03:35:05.162Z",
+  "updatedAt": "2026-11-14T17:36:28.394Z",
   "description": "채널별 어제(D-1)부터 과거 날짜 역방향 순차 수집 범위(completedRanges) 및 비정상 종료 복구 커서(inProgress) DB",
   "retentionDays": 30,
   "channels": {
@@ -15,17 +15,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 650,
-      "rawBytesOnDisk": 2690006,
-      "lastCrawledAt": "2026-11-14T02:03:14.177Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 64
+      "totalCollectedCount": 736,
+      "rawBytesOnDisk": 3076650,
+      "lastCrawledAt": "2026-11-14T16:27:17.477Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 70
     },
     "press-joongang": {
       "channelId": "press-joongang",
@@ -38,17 +38,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 592,
-      "rawBytesOnDisk": 2254252,
-      "lastCrawledAt": "2026-11-14T02:07:50.608Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 59
+      "totalCollectedCount": 686,
+      "rawBytesOnDisk": 2620989,
+      "lastCrawledAt": "2026-11-14T16:31:32.122Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 79
     },
     "press-donga": {
       "channelId": "press-donga",
@@ -61,17 +61,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 627,
-      "rawBytesOnDisk": 2499306,
-      "lastCrawledAt": "2026-11-14T02:12:57.548Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 63
+      "totalCollectedCount": 728,
+      "rawBytesOnDisk": 2918381,
+      "lastCrawledAt": "2026-11-14T16:35:08.197Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 82
     },
     "press-hani": {
       "channelId": "press-hani",
@@ -84,17 +84,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 518,
-      "rawBytesOnDisk": 2070310,
-      "lastCrawledAt": "2026-11-14T02:15:51.651Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 27
+      "totalCollectedCount": 613,
+      "rawBytesOnDisk": 2484940,
+      "lastCrawledAt": "2026-11-14T16:39:21.501Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 78
     },
     "press-khan": {
       "channelId": "press-khan",
@@ -107,17 +107,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 507,
-      "rawBytesOnDisk": 1999227,
-      "lastCrawledAt": "2026-11-14T02:22:11.575Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 48
+      "totalCollectedCount": 609,
+      "rawBytesOnDisk": 2397153,
+      "lastCrawledAt": "2026-11-14T16:43:29.614Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 83
     },
     "press-hankook": {
       "channelId": "press-hankook",
@@ -130,17 +130,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 523,
-      "rawBytesOnDisk": 1947725,
-      "lastCrawledAt": "2026-11-14T02:28:25.923Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 58
+      "totalCollectedCount": 608,
+      "rawBytesOnDisk": 2275370,
+      "lastCrawledAt": "2026-11-14T16:47:51.136Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 68
     },
     "press-seoul": {
       "channelId": "press-seoul",
@@ -153,17 +153,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 553,
-      "rawBytesOnDisk": 2111284,
-      "lastCrawledAt": "2026-11-14T02:32:58.446Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 28
+      "totalCollectedCount": 656,
+      "rawBytesOnDisk": 2574608,
+      "lastCrawledAt": "2026-11-14T16:51:42.609Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 83
     },
     "press-kmib": {
       "channelId": "press-kmib",
@@ -176,17 +176,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 497,
-      "rawBytesOnDisk": 1763214,
-      "lastCrawledAt": "2026-11-14T02:37:06.500Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 41
+      "totalCollectedCount": 595,
+      "rawBytesOnDisk": 2143461,
+      "lastCrawledAt": "2026-11-14T16:55:42.984Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 78
     },
     "press-segye": {
       "channelId": "press-segye",
@@ -199,17 +199,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 614,
-      "rawBytesOnDisk": 2448413,
-      "lastCrawledAt": "2026-11-14T02:43:35.628Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 71
+      "totalCollectedCount": 697,
+      "rawBytesOnDisk": 2828245,
+      "lastCrawledAt": "2026-11-14T17:00:07.573Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 64
     },
     "press-munhwa": {
       "channelId": "press-munhwa",
@@ -222,17 +222,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 572,
-      "rawBytesOnDisk": 1868776,
-      "lastCrawledAt": "2026-11-14T02:50:41.302Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 51
+      "totalCollectedCount": 665,
+      "rawBytesOnDisk": 2222827,
+      "lastCrawledAt": "2026-11-14T17:04:29.277Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 73
     },
     "yt-kbs": {
       "channelId": "yt-kbs",
@@ -245,17 +245,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 451,
-      "rawBytesOnDisk": 949907,
-      "lastCrawledAt": "2026-11-14T02:57:27.371Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 34
+      "totalCollectedCount": 517,
+      "rawBytesOnDisk": 1099661,
+      "lastCrawledAt": "2026-11-14T17:08:11.735Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 45
     },
     "yt-mbc": {
       "channelId": "yt-mbc",
@@ -268,17 +268,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 409,
-      "rawBytesOnDisk": 1031112,
-      "lastCrawledAt": "2026-11-14T03:03:24.489Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 32
+      "totalCollectedCount": 472,
+      "rawBytesOnDisk": 1222040,
+      "lastCrawledAt": "2026-11-14T17:11:23.387Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 46
     },
     "yt-sbs": {
       "channelId": "yt-sbs",
@@ -291,17 +291,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 417,
-      "rawBytesOnDisk": 1270733,
-      "lastCrawledAt": "2026-11-14T03:08:17.706Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 34
+      "totalCollectedCount": 461,
+      "rawBytesOnDisk": 1414237,
+      "lastCrawledAt": "2026-11-14T17:15:19.659Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 35
     },
     "yt-jtbc": {
       "channelId": "yt-jtbc",
@@ -314,17 +314,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 347,
-      "rawBytesOnDisk": 883171,
-      "lastCrawledAt": "2026-11-14T03:11:51.773Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 35
+      "totalCollectedCount": 403,
+      "rawBytesOnDisk": 1088997,
+      "lastCrawledAt": "2026-11-14T17:19:13.480Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 40
     },
     "yt-tvchosun": {
       "channelId": "yt-tvchosun",
@@ -337,17 +337,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 449,
-      "rawBytesOnDisk": 1107196,
-      "lastCrawledAt": "2026-11-14T03:15:29.082Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 44
+      "totalCollectedCount": 509,
+      "rawBytesOnDisk": 1310082,
+      "lastCrawledAt": "2026-11-14T17:22:32.500Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 43
     },
     "yt-channela": {
       "channelId": "yt-channela",
@@ -360,17 +360,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 431,
-      "rawBytesOnDisk": 999429,
-      "lastCrawledAt": "2026-11-14T03:18:08.896Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 43
+      "totalCollectedCount": 498,
+      "rawBytesOnDisk": 1186609,
+      "lastCrawledAt": "2026-11-14T17:25:47.152Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 47
     },
     "yt-mbn": {
       "channelId": "yt-mbn",
@@ -383,17 +383,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 384,
-      "rawBytesOnDisk": 1025591,
-      "lastCrawledAt": "2026-11-14T03:22:26.052Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 33
+      "totalCollectedCount": 448,
+      "rawBytesOnDisk": 1224808,
+      "lastCrawledAt": "2026-11-14T17:28:33.002Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 44
     },
     "yt-ytn": {
       "channelId": "yt-ytn",
@@ -406,17 +406,17 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 478,
-      "rawBytesOnDisk": 1302095,
-      "lastCrawledAt": "2026-11-14T03:28:16.763Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 36
+      "totalCollectedCount": 549,
+      "rawBytesOnDisk": 1568720,
+      "lastCrawledAt": "2026-11-14T17:31:28.943Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 48
     },
     "yt-yonhaptv": {
       "channelId": "yt-yonhaptv",
@@ -429,27 +429,27 @@
           "to": "2026-10-31"
         },
         {
-          "from": "2026-11-07",
-          "to": "2026-11-14"
+          "from": "2026-11-06",
+          "to": "2026-11-15"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 441,
-      "rawBytesOnDisk": 1045258,
-      "lastCrawledAt": "2026-11-14T03:33:41.234Z",
-      "lastProcessedAt": "2026-11-14T03:35:05.162Z",
-      "lastCompletedDate": "2026-11-07",
-      "lastDateItemCount": 37
+      "totalCollectedCount": 506,
+      "rawBytesOnDisk": 1237620,
+      "lastCrawledAt": "2026-11-14T17:34:26.384Z",
+      "lastProcessedAt": "2026-11-14T17:36:28.394Z",
+      "lastCompletedDate": "2026-11-06",
+      "lastDateItemCount": 43
     }
   },
   "storageSummary": {
     "totalChannels": 19,
-    "totalArticlesAndVideos": 9460,
-    "rawFilesCount": 152,
-    "rawDiskBytes": 31267005,
-    "rawDiskKB": 30534.18,
-    "rawDiskMB": 29.819,
-    "oldestRawDate": "2026-11-07",
-    "newestRawDate": "2026-11-14"
+    "totalArticlesAndVideos": 10956,
+    "rawFilesCount": 190,
+    "rawDiskBytes": 36895398,
+    "rawDiskKB": 36030.66,
+    "rawDiskMB": 35.186,
+    "oldestRawDate": "2026-11-06",
+    "newestRawDate": "2026-11-15"
   }
 }
