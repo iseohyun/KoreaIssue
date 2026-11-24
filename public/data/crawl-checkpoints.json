@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updatedAt": "2026-11-24T08:56:58.151Z",
+  "updatedAt": "2026-11-24T22:11:15.603Z",
   "description": "채널별 어제(D-1)부터 과거 날짜 역방향 순차 수집 범위(completedRanges) 및 비정상 종료 복구 커서(inProgress) DB",
   "retentionDays": 30,
   "channels": {
@@ -11,17 +11,17 @@
       "category": "종합일간지",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2792,
-      "rawBytesOnDisk": 12660377,
-      "lastCrawledAt": "2026-11-24T05:55:20.770Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 53
+      "totalCollectedCount": 2912,
+      "rawBytesOnDisk": 13200946,
+      "lastCrawledAt": "2026-11-24T20:36:37.972Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 66
     },
     "press-joongang": {
       "channelId": "press-joongang",
@@ -30,17 +30,17 @@
       "category": "종합일간지",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2809,
-      "rawBytesOnDisk": 11647578,
-      "lastCrawledAt": "2026-11-24T06:05:49.744Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 56
+      "totalCollectedCount": 2931,
+      "rawBytesOnDisk": 12201950,
+      "lastCrawledAt": "2026-11-24T20:43:47.360Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 60
     },
     "press-donga": {
       "channelId": "press-donga",
@@ -49,17 +49,17 @@
       "category": "종합일간지",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2796,
-      "rawBytesOnDisk": 11877178,
-      "lastCrawledAt": "2026-11-24T06:16:16.083Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 54
+      "totalCollectedCount": 2921,
+      "rawBytesOnDisk": 12484419,
+      "lastCrawledAt": "2026-11-24T20:50:49.834Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 57
     },
     "press-hani": {
       "channelId": "press-hani",
@@ -68,17 +68,17 @@
       "category": "종합일간지",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2323,
-      "rawBytesOnDisk": 10434952,
-      "lastCrawledAt": "2026-11-24T06:27:00.707Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 56
+      "totalCollectedCount": 2371,
+      "rawBytesOnDisk": 10708395,
+      "lastCrawledAt": "2026-11-24T20:53:14.645Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 29
     },
     "press-khan": {
       "channelId": "press-khan",
@@ -87,17 +87,17 @@
       "category": "종합일간지",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2529,
-      "rawBytesOnDisk": 10869610,
-      "lastCrawledAt": "2026-11-24T06:38:29.818Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 64
+      "totalCollectedCount": 2593,
+      "rawBytesOnDisk": 11175588,
+      "lastCrawledAt": "2026-11-24T20:57:34.344Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 45
     },
     "press-hankook": {
       "channelId": "press-hankook",
@@ -106,17 +106,17 @@
       "category": "종합일간지",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2369,
-      "rawBytesOnDisk": 9744526,
-      "lastCrawledAt": "2026-11-24T06:49:51.757Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 46
+      "totalCollectedCount": 2446,
+      "rawBytesOnDisk": 10110216,
+      "lastCrawledAt": "2026-11-24T21:01:49.642Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 41
     },
     "press-seoul": {
       "channelId": "press-seoul",
@@ -125,17 +125,17 @@
       "category": "종합일간지",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2723,
-      "rawBytesOnDisk": 11511969,
-      "lastCrawledAt": "2026-11-24T07:02:03.949Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 48
+      "totalCollectedCount": 2829,
+      "rawBytesOnDisk": 11922090,
+      "lastCrawledAt": "2026-11-24T21:09:07.849Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 36
     },
     "press-kmib": {
       "channelId": "press-kmib",
@@ -144,17 +144,17 @@
       "category": "종합일간지",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2653,
-      "rawBytesOnDisk": 10650924,
-      "lastCrawledAt": "2026-11-24T07:13:58.086Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 41
+      "totalCollectedCount": 2747,
+      "rawBytesOnDisk": 11077348,
+      "lastCrawledAt": "2026-11-24T21:14:07.581Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 45
     },
     "press-segye": {
       "channelId": "press-segye",
@@ -163,17 +163,17 @@
       "category": "종합일간지",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2679,
-      "rawBytesOnDisk": 11757955,
-      "lastCrawledAt": "2026-11-24T07:28:47.711Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 39
+      "totalCollectedCount": 2793,
+      "rawBytesOnDisk": 12341937,
+      "lastCrawledAt": "2026-11-24T21:20:32.188Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 77
     },
     "press-munhwa": {
       "channelId": "press-munhwa",
@@ -182,17 +182,17 @@
       "category": "종합일간지",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2632,
-      "rawBytesOnDisk": 9488424,
-      "lastCrawledAt": "2026-11-24T07:41:41.602Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 59
+      "totalCollectedCount": 2716,
+      "rawBytesOnDisk": 9827667,
+      "lastCrawledAt": "2026-11-24T21:24:13.531Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 64
     },
     "yt-kbs": {
       "channelId": "yt-kbs",
@@ -201,16 +201,16 @@
       "category": "지상파",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2020,
-      "rawBytesOnDisk": 5342458,
-      "lastCrawledAt": "2026-11-24T07:47:33.317Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
+      "totalCollectedCount": 2091,
+      "rawBytesOnDisk": 5530339,
+      "lastCrawledAt": "2026-11-24T21:28:31.762Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
       "lastDateItemCount": 30
     },
     "yt-mbc": {
@@ -220,17 +220,17 @@
       "category": "지상파",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 1998,
-      "rawBytesOnDisk": 5885581,
-      "lastCrawledAt": "2026-11-24T07:54:13.871Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 33
+      "totalCollectedCount": 2067,
+      "rawBytesOnDisk": 6076255,
+      "lastCrawledAt": "2026-11-24T21:33:09.487Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 37
     },
     "yt-sbs": {
       "channelId": "yt-sbs",
@@ -239,17 +239,17 @@
       "category": "지상파",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 1780,
-      "rawBytesOnDisk": 6092155,
-      "lastCrawledAt": "2026-11-24T08:02:37.290Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 26
+      "totalCollectedCount": 1838,
+      "rawBytesOnDisk": 6284132,
+      "lastCrawledAt": "2026-11-24T21:36:54.653Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 28
     },
     "yt-jtbc": {
       "channelId": "yt-jtbc",
@@ -258,17 +258,17 @@
       "category": "종편",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 1599,
-      "rawBytesOnDisk": 5118433,
-      "lastCrawledAt": "2026-11-24T08:09:55.680Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 26
+      "totalCollectedCount": 1651,
+      "rawBytesOnDisk": 5279065,
+      "lastCrawledAt": "2026-11-24T21:41:48.781Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 34
     },
     "yt-tvchosun": {
       "channelId": "yt-tvchosun",
@@ -277,17 +277,17 @@
       "category": "종편",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 1935,
-      "rawBytesOnDisk": 5729903,
-      "lastCrawledAt": "2026-11-24T08:17:02.960Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 38
+      "totalCollectedCount": 1997,
+      "rawBytesOnDisk": 5930112,
+      "lastCrawledAt": "2026-11-24T21:45:08.630Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 40
     },
     "yt-channela": {
       "channelId": "yt-channela",
@@ -296,17 +296,17 @@
       "category": "종편",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 1868,
-      "rawBytesOnDisk": 5145929,
-      "lastCrawledAt": "2026-11-24T08:22:45.781Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 45
+      "totalCollectedCount": 1924,
+      "rawBytesOnDisk": 5317554,
+      "lastCrawledAt": "2026-11-24T21:48:14.580Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 36
     },
     "yt-mbn": {
       "channelId": "yt-mbn",
@@ -315,17 +315,17 @@
       "category": "종편",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 1725,
-      "rawBytesOnDisk": 5489778,
-      "lastCrawledAt": "2026-11-24T08:27:39.915Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 46
+      "totalCollectedCount": 1785,
+      "rawBytesOnDisk": 5695454,
+      "lastCrawledAt": "2026-11-24T21:51:28.723Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 40
     },
     "yt-ytn": {
       "channelId": "yt-ytn",
@@ -334,17 +334,17 @@
       "category": "보도전문",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2208,
-      "rawBytesOnDisk": 7449112,
-      "lastCrawledAt": "2026-11-24T08:33:30.730Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 39
+      "totalCollectedCount": 2298,
+      "rawBytesOnDisk": 7807906,
+      "lastCrawledAt": "2026-11-24T21:57:15.958Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 36
     },
     "yt-yonhaptv": {
       "channelId": "yt-yonhaptv",
@@ -353,27 +353,27 @@
       "category": "보도전문",
       "completedRanges": [
         {
-          "from": "2026-10-18",
-          "to": "2026-11-24"
+          "from": "2026-10-17",
+          "to": "2026-11-25"
         }
       ],
       "inProgress": null,
-      "totalCollectedCount": 2012,
-      "rawBytesOnDisk": 5756189,
-      "lastCrawledAt": "2026-11-24T08:40:09.606Z",
-      "lastProcessedAt": "2026-11-24T08:56:58.151Z",
-      "lastCompletedDate": "2026-10-18",
-      "lastDateItemCount": 35
+      "totalCollectedCount": 2105,
+      "rawBytesOnDisk": 6021397,
+      "lastCrawledAt": "2026-11-24T22:00:47.940Z",
+      "lastProcessedAt": "2026-11-24T22:11:15.603Z",
+      "lastCompletedDate": "2026-10-17",
+      "lastDateItemCount": 45
     }
   },
   "storageSummary": {
     "totalChannels": 19,
-    "totalArticlesAndVideos": 43450,
-    "rawFilesCount": 722,
-    "rawDiskBytes": 162653031,
-    "rawDiskKB": 158840.85,
-    "rawDiskMB": 155.118,
-    "oldestRawDate": "2026-10-18",
-    "newestRawDate": "2026-11-24"
+    "totalArticlesAndVideos": 45015,
+    "rawFilesCount": 760,
+    "rawDiskBytes": 168992770,
+    "rawDiskKB": 165032,
+    "rawDiskMB": 161.164,
+    "oldestRawDate": "2026-10-17",
+    "newestRawDate": "2026-11-25"
   }
 }
